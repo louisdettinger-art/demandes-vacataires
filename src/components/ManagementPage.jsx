@@ -11,7 +11,7 @@ function ManagementPage({ currentUser, onLogout }) {
     const [demandes, setDemandes] = useState([]);
     const [isPopupOpen, setIsPopupOpen] = useState(false);
     const [isSearchPopupOpen, setIsSearchPopupOpen] = useState(false);
-    const [activeTab, setActiveTab] useState('attente');
+    const [activeTab, setActiveTab] = useState('attente'); // LIGNE CORRIGÉE
     const [selectedDemande, setSelectedDemande] = useState(null);
     const [searchCriteres, setSearchCriteres] = useState({});
     const isDEC1 = currentUser === 'DEC1';
