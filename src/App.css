@@ -1,17 +1,23 @@
+/* Styles généraux et reset */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
+body, html, #root, .App {
+    min-height: 100vh;
+    width: 100%;
+}
+
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    min-height: 100vh;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    display: flex;
-    align-items: center;
-    justify-content: center;
 }
+
+/* ========================================================================== */
+/* ==                     STYLES DE LA PAGE DE CONNEXION                     == */
+/* ========================================================================== */
 
 .login-container {
     background: white;
@@ -20,56 +26,24 @@ body {
     padding: 40px;
     width: 100%;
     max-width: 450px;
+    margin: 10vh auto; /* Centre le formulaire */
 }
 
-.header {
+.login-container .header {
     text-align: center;
     margin-bottom: 30px;
 }
 
-.header h1 {
+.login-container .header h1 {
     color: #2c3e50;
     font-size: 24px;
     margin-bottom: 8px;
     font-weight: 600;
 }
 
-.header p {
+.login-container .header p {
     color: #7f8c8d;
     font-size: 14px;
-}
-
-.form-group {
-    margin-bottom: 20px;
-}
-
-.form-group label {
-    display: block;
-    margin-bottom: 8px;
-    color: #2c3e50;
-    font-weight: 500;
-    font-size: 14px;
-}
-
-.form-group select,
-.form-group input,
-.form-group textarea {
-    width: 100%;
-    padding: 12px 15px;
-    border: 2px solid #e0e6ed;
-    border-radius: 8px;
-    font-size: 16px;
-    transition: all 0.3s ease;
-    background: white;
-    color: #2c3e50;
-}
-
-.form-group select:focus,
-.form-group input:focus,
-.form-group textarea:focus {
-    outline: none;
-    border-color: #667eea;
-    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
 }
 
 .login-btn {
@@ -92,14 +66,14 @@ body {
     box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
 }
 
-.hidden { display: none !important; }
+/* ========================================================================== */
+/* ==                      STYLES DE LA PAGE DE GESTION                      == */
+/* ========================================================================== */
 
-/* Styles pour la page de gestion */
 .management-page {
     background: #f8f9fa;
-    min-height: 100vh;
-    display: block;
     width: 100%;
+    min-height: 100vh;
 }
 
 .management-header {
@@ -110,10 +84,9 @@ body {
 }
 
 .management-header .container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 20px;
-    position: relative;
+    width: 100%;
+    padding: 0 40px;
+    position: relative; /* Indispensable pour positionner les boutons */
 }
 
 .management-header h1 {
@@ -126,6 +99,34 @@ body {
     font-size: 16px;
 }
 
+/* Conteneur pour les boutons "Modifier mot de passe" et "Déconnexion" */
+.account-actions {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    right: 40px;
+    display: flex;
+    gap: 15px;
+    align-items: center;
+}
+
+/* Style du bouton "Modifier le mot de passe" */
+.account-btn {
+    background: transparent;
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.2s ease-in-out;
+}
+
+.account-btn:hover {
+    background: rgba(255, 255, 255, 0.15);
+}
+
+/* Style du bouton "Déconnexion" (sans positionnement) */
 .logout-btn {
     background: rgba(255,255,255,0.2);
     color: white;
@@ -134,15 +135,10 @@ body {
     border-radius: 6px;
     cursor: pointer;
     font-size: 14px;
-    position: absolute;
-    top: 0;
-    right: 20px;
 }
 
 .management-content {
-    max-width: 100%;
-    margin: 0;
-    padding: 20px;
+    padding: 0 40px 40px 40px;
 }
 
 .new-request-btn {
@@ -195,14 +191,6 @@ body {
     padding: 20px;
 }
 
-.tab-panel {
-    display: none;
-}
-
-.tab-panel.active {
-    display: block;
-}
-
 .request-card {
     border: 1px solid #e9ecef;
     padding: 15px;
@@ -237,7 +225,10 @@ body {
     color: #856404;
 }
 
-/* Popup */
+/* ========================================================================== */
+/* ==                         STYLES COMMUNS (POPUPS, FORM)                  == */
+/* ========================================================================== */
+
 .popup-overlay {
     position: fixed;
     top: 0;
@@ -287,7 +278,46 @@ body {
     justify-content: center;
 }
 
-/* Styles de la popup de création de demande */
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    color: #2c3e50;
+    font-weight: 500;
+    font-size: 14px;
+}
+
+.form-group select,
+.form-group input,
+.form-group textarea {
+    width: 100%;
+    padding: 12px 15px;
+    border: 2px solid #e0e6ed;
+    border-radius: 8px;
+    font-size: 16px;
+    transition: all 0.3s ease;
+    background: white;
+    color: #2c3e50;
+}
+
+.form-group select:focus,
+.form-group input:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.no-demands-message {
+    text-align: center;
+    color: #7f8c8d;
+}/* ========================================================================== */
+/* ==                  STYLES POUR LE FORMULAIRE DE CRÉATION                 == */
+/* ========================================================================== */
+
 .form-section {
     border: 1px solid #e9ecef;
     border-radius: 10px;
@@ -312,27 +342,6 @@ body {
 
 .form-row.full-width {
     grid-template-columns: 1fr;
-}
-
-.form-group label {
-    display: block;
-    margin-bottom: 8px;
-    font-weight: 500;
-    color: #2c3e50;
-    font-size: 14px;
-}
-
-.form-group input,
-.form-group select,
-.form-group textarea {
-    width: 100%;
-    padding: 12px 15px;
-    border: 2px solid #e0e6ed;
-    border-radius: 8px;
-    font-size: 16px;
-    background: white;
-    color: #2c3e50;
-    transition: all 0.3s ease;
 }
 
 .intervenant-group {
@@ -407,7 +416,6 @@ body {
     align-items: center;
 }
 
-/* Style du bouton de soumission */
 .submit-btn {
     width: 100%;
     background: #28a745;
@@ -432,501 +440,9 @@ body {
     transform: translateY(-2px);
     box-shadow: 0 10px 20px rgba(40, 167, 69, 0.3);
 }
-
-/* Style du message "Aucune demande" */
-.no-demands-message {
-    text-align: center;
-    color: #7f8c8d;
-}
-
-/* Styles pour la pop-up de détails */
-.detail-section {
-    margin-bottom: 25px;
-    border: 1px solid #e9ecef;
-    border-radius: 8px;
-    padding: 20px;
-    background-color: #f8f9fa;
-}
-
-.detail-section h3 {
-    font-size: 18px;
-    color: #34495e;
-    margin-bottom: 15px;
-    padding-bottom: 8px;
-    border-bottom: 1px solid #f0f2f5;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.detail-item {
-    display: flex;
-    margin-bottom: 10px;
-    font-size: 15px;
-}
-
-.detail-item label {
-    font-weight: 600;
-    color: #495057;
-    width: 150px;
-    flex-shrink: 0;
-}
-
-.detail-item span {
-    color: #2c3e50;
-    flex-grow: 1;
-}
-
-/* Styles pour les intervenants dans la pop-up de détails */
-#detail-intervenants .intervenant-item {
-    background: #e9ecef;
-    padding: 8px 15px;
-    border-radius: 6px;
-    margin-bottom: 8px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 15px;
-}
-
-#detail-intervenants .intervenant-item strong {
-    font-size: 16px;
-    color: #667eea;
-}
-
-/* Styles pour les dates et horaires dans la pop-up de détails */
-#detail-dates .date-item {
-    background: #f8f9fa;
-    padding: 10px 15px;
-    border-radius: 6px;
-    margin-bottom: 10px;
-    border: 1px solid #dee2e6;
-}
-
-.demande-status-control p {
-    font-weight: 600;
-    margin-bottom: 10px;
-}
-
-.status-buttons {
-    display: flex;
-    gap: 10px;
-    margin-top: 10px;
-}
-
-.status-btn {
-    padding: 10px 20px;
-    border: none;
-    border-radius: 8px;
-    font-weight: 600;
-    cursor: pointer;
-    color: white;
-    transition: all 0.3s ease;
-    opacity: 0.7;
-}
-
-.status-btn:hover {
-    opacity: 1;
-}
-
-.status-btn.active {
-    opacity: 1;
-    border: 2px solid white;
-}
-
-.status-btn.en-attente {
-    background-color: #ffc107;
-}
-
-.status-btn.en-cours {
-    background-color: #17a2b8;
-}
-
-.status-btn.terminee {
-    background-color: #28a745;
-}
-
-.save-changes-btn {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    padding: 12px 24px;
-    border: none;
-    border-radius: 8px;
-    font-size: 16px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.save-changes-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
-}
-
-.detail-section h3 svg {
-    margin-right: 8px;
-    font-size: 20px;
-}/* ... (gardez tous les styles existants) ... */
-
-/* Styles pour la pop-up de détails */
-.detail-section {
-    margin-bottom: 25px;
-    border: 1px solid #e9ecef;
-    border-radius: 8px;
-    padding: 20px;
-    background-color: #f8f9fa;
-}
-
-.detail-section h3 {
-    font-size: 18px;
-    color: #34495e;
-    margin-bottom: 15px;
-    padding-bottom: 8px;
-    border-bottom: 1px solid #f0f2f5;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.intervenant-item {
-    background: #e9ecef;
-    padding: 8px 15px;
-    border-radius: 6px;
-    margin-bottom: 8px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 15px;
-}
-
-.intervenant-item strong {
-    font-size: 16px;
-    color: #667eea;
-}
-
-.dates-section {
-    padding-left: 20px;
-}
-
-.date-item {
-    margin-bottom: 10px;
-}
-
-.date-time {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.pause-indicator {
-    background-color: #ffecb3;
-    color: #343a40;
-    padding: 3px 8px;
-    border-radius: 5px;
-    font-size: 0.8em;
-    font-weight: 500;
-}
-
-/* ... (gardez tous les styles existants) ... */.search-input {
-    width: 100%;
-    padding: 12px 15px;
-    margin-bottom: 20px;
-    border: 2px solid #e0e6ed;
-    border-radius: 8px;
-    font-size: 16px;
-    transition: all 0.3s ease;
-}
-
-.search-input:focus {
-    outline: none;
-    border-color: #667eea;
-    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-}/* ... (gardez tous les styles existants) ... */
-
-/* Styles pour la pop-up de détails */
-.detail-section {
-    margin-bottom: 25px;
-    border: 1px solid #e9ecef;
-    border-radius: 8px;
-    padding: 20px;
-    background-color: #f8f9fa;
-}
-
-.detail-section h3 {
-    font-size: 18px;
-    color: #34495e;
-    margin-bottom: 15px;
-    padding-bottom: 8px;
-    border-bottom: 1px solid #f0f2f5;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.intervenant-item {
-    background: #e9ecef;
-    padding: 8px 15px;
-    border-radius: 6px;
-    margin-bottom: 8px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 15px;
-}
-
-.intervenant-item strong {
-    font-size: 16px;
-    color: #667eea;
-}
-
-.dates-section {
-    padding-left: 20px;
-}
-
-.date-item {
-    margin-bottom: 10px;
-}
-
-.date-time {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.pause-indicator {
-    background-color: #ffecb3;
-    color: #343a40;
-    padding: 3px 8px;
-    border-radius: 5px;
-    font-size: 0.8em;
-    font-weight: 500;
-}
-
-/* ... (gardez tous les styles existants) ... */
-
-/* Styles pour le bouton de soumission */
-.submit-btn {
-    width: 100%;
-    background: #28a745;
-    color: white;
-    padding: 18px 40px;
-    border: none;
-    border-radius: 10px;
-    font-size: 18px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-.submit-btn:disabled {
-    background: #ccc;
-    cursor: not-allowed;
-}
-
-.submit-btn:not(:disabled):hover {
-    transform: translateY(-2px);
-    box-shadow: 0 10px 20px rgba(40, 167, 69, 0.3);
-}
-
-/* Style du message "Aucune demande" */
-.no-demands-message {
-    text-align: center;
-    color: #7f8c8d;
-}
-
-/* Boutons d'action pour DEC1 */
-.annulation-actions {
-    display: flex;
-    gap: 10px;
-    justify-content: center;
-    margin-top: 20px;
-}
-
-.annuler-btn {
-    background-color: #dc3545;
-    color: white;
-    padding: 12px 24px;
-    border: none;
-    border-radius: 8px;
-    font-size: 16px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-}
-
-.annuler-btn:hover {
-    background-color: #c82333;
-}
-
-.reactiver-btn {
-    background-color: #28a745;
-    color: white;
-    padding: 12px 24px;
-    border: none;
-    border-radius: 8px;
-    font-size: 16px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-}
-
-.reactiver-btn:hover {
-    background-color: #218838;
-}
-
-/* Styles pour le motif d'annulation */
-.annulation-motif {
-    margin-top: 20px;
-}/* Styles généraux */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
-body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    min-height: 100vh;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.login-container {
-    background: white;
-    border-radius: 15px;
-    box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-    padding: 40px;
-    width: 100%;
-    max-width: 450px;
-}
-
-.header {
-    text-align: center;
-    margin-bottom: 30px;
-}
-
-.header h1 {
-    color: #2c3e50;
-    font-size: 24px;
-    margin-bottom: 8px;
-    font-weight: 600;
-}
-
-.header p {
-    color: #7f8c8d;
-    font-size: 14px;
-}
-
-.form-group {
-    margin-bottom: 20px;
-}
-
-.form-group label {
-    display: block;
-    margin-bottom: 8px;
-    color: #2c3e50;
-    font-weight: 500;
-    font-size: 14px;
-}
-
-.form-group select,
-.form-group input,
-.form-group textarea {
-    width: 100%;
-    padding: 12px 15px;
-    border: 2px solid #e0e6ed;
-    border-radius: 8px;
-    font-size: 16px;
-    transition: all 0.3s ease;
-    background: white;
-    color: #2c3e50;
-}
-
-.form-group select:focus,
-.form-group input:focus,
-.form-group textarea:focus {
-    outline: none;
-    border-color: #667eea;
-    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-}
-
-.login-btn {
-    width: 100%;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    padding: 14px;
-    border: none;
-    border-radius: 8px;
-    font-size: 16px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-.login-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
-}
-
-.hidden { display: none !important; }
-
-/* Styles pour la page de gestion */
-.management-page {
-    background: #f8f9fa;
-    min-height: 100vh;
-    display: block;
-    width: 100%;
-}
-
-.management-header {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    padding: 20px 0;
-    margin-bottom: 30px;
-}
-
-.management-header .container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 20px;
-    position: relative;
-}
-
-.management-header h1 {
-    font-size: 28px;
-    margin-bottom: 5px;
-}
-
-.management-header p {
-    opacity: 0.9;
-    font-size: 16px;
-}
-
-.logout-btn {
-    background: rgba(255,255,255,0.2);
-    color: white;
-    border: 1px solid rgba(255,255,255,0.3);
-    padding: 8px 16px;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 14px;
-    position: absolute;
-    top: 0;
-    right: 20px;
-}
-
-.management-content {
-    max-width: 100%;
-    margin: 0;
-    padding: 20px;
-}
-
-.new-request-btn {
-    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+/* Style pour le bouton de recherche */
+.search-request-btn {
+    background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
     color: white;
     padding: 12px 24px;
     border: none;
@@ -938,734 +454,7 @@ body {
     transition: all 0.3s ease;
 }
 
-.tabs-section {
-    background: white;
-    border-radius: 10px;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.08);
-    overflow: hidden;
-}
-
-.tabs-header {
-    display: flex;
-    background: #f8f9fa;
-    border-bottom: 1px solid #e9ecef;
-}
-
-.tab-btn {
-    flex: 1;
-    padding: 15px 20px;
-    border: none;
-    background: transparent;
-    cursor: pointer;
-    font-size: 14px;
-    font-weight: 500;
-    color: #6c757d;
-    transition: all 0.3s ease;
-    border-bottom: 3px solid transparent;
-}
-
-.tab-btn.active {
-    background: white;
-    color: #667eea;
-    border-bottom-color: #667eea;
-}
-
-.tab-content {
-    min-height: 300px;
-    padding: 20px;
-}
-
-.tab-panel {
-    display: none;
-}
-
-.tab-panel.active {
-    display: block;
-}
-
-.request-card {
-    border: 1px solid #e9ecef;
-    padding: 15px;
-    margin-bottom: 15px;
-    border-radius: 8px;
-    transition: all 0.3s ease;
-    cursor: pointer;
-}
-
-.request-card:hover {
-    border-color: #667eea;
-    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.1);
+.search-request-btn:hover {
     transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(0, 123, 255, 0.25);
 }
-
-.request-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 10px;
-}
-
-.status {
-    padding: 4px 12px;
-    border-radius: 20px;
-    font-size: 12px;
-    font-weight: 600;
-}
-
-.status-pending {
-    background: #fff3cd;
-    color: #856404;
-}
-
-/* Popup */
-.popup-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 9999;
-    backdrop-filter: blur(5px);
-}
-
-.popup-content {
-    background: white;
-    border-radius: 15px;
-    padding: 30px;
-    width: 95%;
-    max-width: 1000px;
-    max-height: 95vh;
-    overflow-y: auto;
-    box-shadow: 0 20px 40px rgba(0,0,0,0.2);
-}
-
-.popup-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 30px;
-    padding-bottom: 20px;
-    border-bottom: 2px solid #e9ecef;
-}
-
-.close-btn {
-    background: none;
-    border: none;
-    font-size: 24px;
-    color: #7f8c8d;
-    cursor: pointer;
-    padding: 5px;
-    border-radius: 50%;
-    width: 40px;
-    height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-/* Styles de la popup de création de demande */
-.form-section {
-    border: 1px solid #e9ecef;
-    border-radius: 10px;
-    padding: 20px;
-    margin-bottom: 25px;
-    background-color: #f8f9fa;
-}
-
-.form-section h4 {
-    color: #667eea;
-    margin-bottom: 15px;
-    padding-bottom: 10px;
-    border-bottom: 1px solid #e0e6ed;
-}
-
-.form-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 25px;
-    margin-bottom: 20px;
-}
-
-.form-row.full-width {
-    grid-template-columns: 1fr;
-}
-
-.form-group label {
-    display: block;
-    margin-bottom: 8px;
-    font-weight: 500;
-    color: #2c3e50;
-    font-size: 14px;
-}
-
-.form-group input,
-.form-group select,
-.form-group textarea {
-    width: 100%;
-    padding: 12px 15px;
-    border: 2px solid #e0e6ed;
-    border-radius: 8px;
-    font-size: 16px;
-    transition: all 0.3s ease;
-    background: white;
-    color: #2c3e50;
-}
-
-.intervenant-group {
-    border: 2px solid #cce5ff;
-    border-radius: 8px;
-    padding: 15px;
-    margin-bottom: 15px;
-    background: #f0f8ff;
-}
-
-.intervenant-row {
-    display: grid;
-    grid-template-columns: 2fr 1fr auto;
-    gap: 15px;
-    align-items: end;
-    margin-bottom: 10px;
-}
-
-.intervenant-group .dates-intervenant {
-    margin-top: 15px;
-    padding: 15px;
-    background: #ffffff;
-    border-radius: 8px;
-    border: 1px solid #dee2e6;
-}
-
-.intervenant-group .add-date-btn {
-    background: #17a2b8;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    padding: 8px 15px;
-    cursor: pointer;
-    font-size: 12px;
-    margin-top: 10px;
-    transition: all 0.3s ease;
-}
-
-.add-btn {
-    background: #17a2b8;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    padding: 10px 15px;
-    cursor: pointer;
-    font-size: 14px;
-    margin-top: 10px;
-    transition: all 0.3s ease;
-}
-
-.remove-btn {
-    background: #dc3545;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    padding: 8px 12px;
-    cursor: pointer;
-    font-size: 14px;
-}
-
-.date-group {
-    background: #ffffff;
-    border-radius: 8px;
-    padding: 10px;
-    margin-bottom: 10px;
-}
-
-.date-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr auto auto;
-    gap: 10px;
-    align-items: center;
-}
-
-/* Style du bouton de soumission */
-.submit-btn {
-    width: 100%;
-    background: #28a745;
-    color: white;
-    padding: 18px 40px;
-    border: none;
-    border-radius: 10px;
-    font-size: 18px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-.submit-btn:disabled {
-    background: #ccc;
-    cursor: not-allowed;
-}
-
-.submit-btn:not(:disabled):hover {
-    transform: translateY(-2px);
-    box-shadow: 0 10px 20px rgba(40, 167, 69, 0.3);
-}
-
-/* Style du message "Aucune demande" */
-.no-demands-message {
-    text-align: center;
-    color: #7f8c8d;
-}
-
-/* Styles pour la pop-up de détails */
-.detail-section {
-    margin-bottom: 25px;
-    border: 1px solid #e9ecef;
-    border-radius: 8px;
-    padding: 20px;
-    background-color: #f8f9fa;
-}
-
-.detail-section h3 {
-    font-size: 18px;
-    color: #34495e;
-    margin-bottom: 15px;
-    padding-bottom: 8px;
-    border-bottom: 1px solid #f0f2f5;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.detail-item {
-    display: flex;
-    margin-bottom: 10px;
-    font-size: 15px;
-}
-
-.detail-item label {
-    font-weight: 600;
-    color: #495057;
-    width: 150px;
-    flex-shrink: 0;
-}
-
-.detail-item span {
-    color: #2c3e50;
-    flex-grow: 1;
-}
-
-/* Styles pour les intervenants dans la pop-up de détails */
-#detail-intervenants .intervenant-item {
-    background: #e9ecef;
-    padding: 8px 15px;
-    border-radius: 6px;
-    margin-bottom: 8px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 15px;
-}
-
-#detail-intervenants .intervenant-item strong {
-    font-size: 16px;
-    color: #667eea;
-}
-
-/* Styles pour les dates et horaires dans la pop-up de détails */
-#detail-dates .date-item {
-    background: #f8f9fa;
-    padding: 10px 15px;
-    border-radius: 6px;
-    margin-bottom: 10px;
-    border: 1px solid #dee2e6;
-}
-
-.demande-status-control p {
-    font-weight: 600;
-    margin-bottom: 10px;
-}
-
-.status-buttons {
-    display: flex;
-    gap: 10px;
-    margin-top: 10px;
-}
-
-.status-btn {
-    padding: 10px 20px;
-    border: none;
-    border-radius: 8px;
-    font-weight: 600;
-    cursor: pointer;
-    color: white;
-    transition: all 0.3s ease;
-    opacity: 0.7;
-}
-
-.status-btn:hover {
-    opacity: 1;
-}
-
-.status-btn.active {
-    opacity: 1;
-    border: 2px solid white;
-}
-
-.status-btn.en-attente {
-    background-color: #ffc107;
-}
-
-.status-btn.en-cours {
-    background-color: #17a2b8;
-}
-
-.status-btn.terminee {
-    background-color: #28a745;
-}
-
-.save-changes-btn {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    padding: 12px 24px;
-    border: none;
-    border-radius: 8px;
-    font-size: 16px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.save-changes-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
-}
-
-.detail-section h3 svg {
-    margin-right: 8px;
-    font-size: 20px;
-}/* ... (gardez tous les styles existants) ... */
-
-/* Styles pour la pop-up de détails */
-.detail-section {
-    margin-bottom: 25px;
-    border: 1px solid #e9ecef;
-    border-radius: 8px;
-    padding: 20px;
-    background-color: #f8f9fa;
-}
-
-.detail-section h3 {
-    font-size: 18px;
-    color: #34495e;
-    margin-bottom: 15px;
-    padding-bottom: 8px;
-    border-bottom: 1px solid #f0f2f5;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.intervenant-item {
-    background: #e9ecef;
-    padding: 8px 15px;
-    border-radius: 6px;
-    margin-bottom: 8px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 15px;
-}
-
-.intervenant-item strong {
-    font-size: 16px;
-    color: #667eea;
-}
-
-.dates-section {
-    padding-left: 20px;
-}
-
-.date-item {
-    margin-bottom: 10px;
-}
-
-.date-time {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.pause-indicator {
-    background-color: #ffecb3;
-    color: #343a40;
-    padding: 3px 8px;
-    border-radius: 5px;
-    font-size: 0.8em;
-    font-weight: 500;
-}
-
-/* ... (gardez tous les styles existants) ... *//* ... (gardez tous les styles existants) ... */
-
-/* Styles pour la pop-up de détails */
-.detail-section {
-    margin-bottom: 25px;
-    border: 1px solid #e9ecef;
-    border-radius: 8px;
-    padding: 20px;
-    background-color: #f8f9fa;
-}
-
-.detail-section h3 {
-    font-size: 18px;
-    color: #34495e;
-    margin-bottom: 15px;
-    padding-bottom: 8px;
-    border-bottom: 1px solid #f0f2f5;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.intervenant-item {
-    background: #e9ecef;
-    padding: 8px 15px;
-    border-radius: 6px;
-    margin-bottom: 8px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 15px;
-}
-
-.intervenant-item strong {
-    font-size: 16px;
-    color: #667eea;
-}
-
-.dates-section {
-    padding-left: 20px;
-}
-
-.date-item {
-    margin-bottom: 10px;
-}
-
-.date-time {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.pause-indicator {
-    background-color: #ffecb3;
-    color: #343a40;
-    padding: 3px 8px;
-    border-radius: 5px;
-    font-size: 0.8em;
-    font-weight: 500;
-}
-
-/* ... (gardez tous les styles existants) ... *//* ... (gardez tous les styles existants) ... */
-
-.search-input {
-    width: 300px;
-    padding: 12px 15px;
-    border: 2px solid #e0e6ed;
-    border-radius: 8px;
-    font-size: 16px;
-    transition: all 0.3s ease;
-}
-
-.search-input:focus {
-    outline: none;
-    border-color: #667eea;
-    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-}/* ... (gardez tous les styles existants) ... */
-
-/* Styles pour la pop-up de détails */
-.detail-section {
-    margin-bottom: 25px;
-    border: 1px solid #e9ecef;
-    border-radius: 8px;
-    padding: 20px;
-    background-color: #f8f9fa;
-}
-
-.detail-section h3 {
-    font-size: 18px;
-    color: #34495e;
-    margin-bottom: 15px;
-    padding-bottom: 8px;
-    border-bottom: 1px solid #f0f2f5;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.intervenant-item {
-    background: #e9ecef;
-    padding: 8px 15px;
-    border-radius: 6px;
-    margin-bottom: 8px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 15px;
-}
-
-.intervenant-item strong {
-    font-size: 16px;
-    color: #667eea;
-}
-
-.dates-section {
-    padding-left: 20px;
-}
-
-.date-item {
-    margin-bottom: 10px;
-}
-
-.date-time {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.pause-indicator {
-    background-color: #ffecb3;
-    color: #343a40;
-    padding: 3px 8px;
-    border-radius: 5px;
-    font-size: 0.8em;
-    font-weight: 500;
-}
-
-/* ... (gardez tous les styles existants) ... *//* ... (gardez tous les styles existants) ... */
-.sort-buttons {
-    display: flex;
-    gap: 10px;
-}
-
-.sort-btn {
-    background-color: #e9ecef;
-    color: #495057;
-    border: none;
-    padding: 10px 15px;
-    border-radius: 8px;
-    cursor: pointer;
-    font-weight: 600;
-    transition: all 0.3s ease;
-}
-
-.sort-btn.active {
-    background-color: #667eea;
-    color: white;
-}/* ... (gardez tous les styles existants) ... */
-
-.search-input {
-    width: 300px;
-    padding: 12px 15px;
-    border: 2px solid #e0e6ed;
-    border-radius: 8px;
-    font-size: 16px;
-    transition: all 0.3s ease;
-}
-
-.search-input:focus {
-    outline: none;
-    border-color: #667eea;
-    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-}/* ... (gardez tous les styles existants) ... */
-.search-input {
-    width: 300px;
-    padding: 12px 15px;
-    border: 2px solid #e0e6ed;
-    border-radius: 8px;
-    font-size: 16px;
-    transition: all 0.3s ease;
-}
-
-.search-input:focus {
-    outline: none;
-    border-color: #667eea;
-    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-}/* ... (gardez tous les styles existants) ... */
-.search-input {
-    width: 300px;
-    padding: 12px 15px;
-    border: 2px solid #e0e6ed;
-    border-radius: 8px;
-    font-size: 16px;
-    transition: all 0.3s ease;
-}
-
-.search-input:focus {
-    outline: none;
-    border-color: #667eea;
-    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-}/* ... (gardez tous les styles existants) ... */
-
-/* Styles pour la pop-up de détails */
-.detail-section {
-    margin-bottom: 25px;
-    border: 1px solid #e9ecef;
-    border-radius: 8px;
-    padding: 20px;
-    background-color: #f8f9fa;
-}
-
-.detail-section h3 {
-    font-size: 18px;
-    color: #34495e;
-    margin-bottom: 15px;
-    padding-bottom: 8px;
-    border-bottom: 1px solid #f0f2f5;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.intervenant-item {
-    background: #e9ecef;
-    padding: 8px 15px;
-    border-radius: 6px;
-    margin-bottom: 8px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 15px;
-}
-
-.intervenant-item strong {
-    font-size: 16px;
-    color: #667eea;
-}
-
-.dates-section {
-    padding-left: 20px;
-}
-
-.date-item {
-    margin-bottom: 10px;
-}
-
-.date-time {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.pause-indicator {
-    background-color: #ffecb3;
-    color: #343a40;
-    padding: 3px 8px;
-    border-radius: 5px;
-    font-size: 0.8em;
-    font-weight: 500;
-}
-
-/* ... (gardez tous les styles existants) ... */

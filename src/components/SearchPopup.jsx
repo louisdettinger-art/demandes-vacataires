@@ -32,7 +32,7 @@ function SearchPopup({ onSearch, onClose }) {
         <div className="popup-overlay" onClick={onClose}>
             <div className="popup-content" onClick={(e) => e.stopPropagation()}>
                 <div className="popup-header">
-                    <h2>Recherche avancée</h2>
+                    <h2>Recherche avancÃ©e</h2>
                     <button className="close-btn" onClick={onClose}>&times;</button>
                 </div>
                 <div className="form-section">
@@ -48,11 +48,11 @@ function SearchPopup({ onSearch, onClose }) {
                     </div>
                     <div className="form-row">
                         <div className="form-group">
-                            <label>Spécialité</label>
+                            <label>SpÃ©cialitÃ©</label>
                             <input type="text" name="specialite" value={criteres.specialite} onChange={handleChange} />
                         </div>
                         <div className="form-group">
-                            <label>Épreuve</label>
+                            <label>Ã‰preuve</label>
                             <input type="text" name="epreuve" value={criteres.epreuve} onChange={handleChange} />
                         </div>
                     </div>
@@ -68,7 +68,7 @@ function SearchPopup({ onSearch, onClose }) {
                     </div>
                     <div className="form-row">
                         <div className="form-group">
-                            <label>Libellé centre</label>
+                            <label>LibellÃ© centre</label>
                             <input type="text" name="libelleCentre" value={criteres.libelleCentre} onChange={handleChange} />
                         </div>
                         <div className="form-group">
@@ -82,13 +82,13 @@ function SearchPopup({ onSearch, onClose }) {
                             <input type="date" name="date" value={criteres.date} onChange={handleChange} />
                         </div>
                         <div className="form-group">
-                            <label>Numéro de mission</label>
+                            <label>NumÃ©ro de mission</label>
                             <input type="text" name="numeroMission" value={criteres.numeroMission} onChange={handleChange} />
                         </div>
                     </div>
                     <div className="form-row">
                         <div className="form-group">
-                            <label>Numéro de référence</label>
+                            <label>NumÃ©ro de rÃ©fÃ©rence</label>
                             <input type="text" name="referenceNumber" value={criteres.referenceNumber} onChange={handleChange} />
                         </div>
                         <div className="form-group">

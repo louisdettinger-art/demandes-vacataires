@@ -1,27 +1,49 @@
-import React, { useState } from 'react';
+// src/App.jsx
+
+import React, { useState, useEffect } from 'react';
+import { auth } from './firebase';
+import { onAuthStateChanged, signOut } from 'firebase/auth';
+import { NotificationProvider } from './contexts/NotificationContext';
+
 import LoginPage from './components/LoginPage';
 import ManagementPage from './components/ManagementPage';
 import './App.css';
 
 function App() {
-    const [currentUser, setCurrentUser] = useState(null);
+    const [currentUserBureau, setCurrentUserBureau] = useState(null);
+    const [loading, setLoading] = useState(true);
 
-    const handleLogin = (bureau) => {
-        setCurrentUser(bureau);
-    };
+    useEffect(() => {
+        const unsubscribe = onAuthStateChanged(auth, (user) => {
+            if (user) {
+                const bureauName = user.email.split('@')[0].toUpperCase();
+                setCurrentUserBureau(bureauName);
+            } else {
+                setCurrentUserBureau(null);
+            }
+            setLoading(false);
+        });
+        return () => unsubscribe();
+    }, []);
 
     const handleLogout = () => {
-        setCurrentUser(null);
+        signOut(auth).catch((error) => console.error("Erreur de déconnexion:", error));
     };
 
+    if (loading) {
+        return <div>Chargement...</div>;
+    }
+
     return (
-        <div className="app">
-            {currentUser ? (
-                <ManagementPage currentUser={currentUser} onLogout={handleLogout} />
-            ) : (
-                <LoginPage onLogin={handleLogin} />
-            )}
-        </div>
+        <NotificationProvider>
+            <div className="App">
+                {currentUserBureau ? (
+                    <ManagementPage currentUser={currentUserBureau} onLogout={handleLogout} />
+                ) : (
+                    <LoginPage />
+                )}
+            </div>
+        </NotificationProvider>
     );
 }
 

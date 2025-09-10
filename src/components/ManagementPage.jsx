@@ -1,19 +1,31 @@
-import React, { useState, useEffect, useMemo } from 'react';
-// Imports depuis Firebase - ON AJOUTE doc et updateDoc
-import { db } from '../firebase';
-import { collection, addDoc, onSnapshot, doc, updateDoc } from "firebase/firestore"; 
+// src/components/ManagementPage.jsx
 
-// Imports des autres composants
+import React, { useState, useEffect, useMemo, useRef } from 'react';
+import { db, auth } from '../firebase';
+import { collection, addDoc, onSnapshot, doc, updateDoc } from "firebase/firestore";
+import { updatePassword } from "firebase/auth";
+
+import { useNotifications } from '../contexts/NotificationContext';
+import NotificationBell from './NotificationBell';
+import NotificationPanel from './NotificationPanel';
+
 import NewRequestPopup from './NewRequestPopup';
 import RequestCard from './RequestCard';
 import RequestDetailsPopup from './RequestDetailsPopup';
 import AnnulationPopup from './AnnulationPopup';
 import SearchPopup from './SearchPopup';
+import PasswordChangePopup from './PasswordChangePopup';
 
 function ManagementPage({ currentUser, onLogout }) {
     const [demandes, setDemandes] = useState([]);
+    const demandesRef = useRef([]);
+
+    const { addNotification, markAsRead } = useNotifications();
+    const [isPanelOpen, setIsPanelOpen] = useState(false);
+    
     const [isPopupOpen, setIsPopupOpen] = useState(false);
     const [isSearchPopupOpen, setIsSearchPopupOpen] = useState(false);
+    const [isPasswordPopupOpen, setIsPasswordPopupOpen] = useState(false);
     const [activeTab, setActiveTab] = useState('attente');
     const [selectedDemande, setSelectedDemande] = useState(null);
     const [searchCriteres, setSearchCriteres] = useState({});
@@ -24,151 +36,101 @@ function ManagementPage({ currentUser, onLogout }) {
     useEffect(() => {
         const q = collection(db, "demandes");
         const unsubscribe = onSnapshot(q, (querySnapshot) => {
-            const demandesData = [];
-            querySnapshot.forEach((doc) => {
-                demandesData.push({ id: doc.id, ...doc.data() });
+            querySnapshot.docChanges().forEach((change) => {
+                if (change.type === "modified") {
+                    const oldData = demandesRef.current.find(d => d.id === change.doc.id);
+                    const newData = { id: change.doc.id, ...change.doc.data() };
+                    if (oldData && oldData.statut !== newData.statut) {
+                        const message = `La demande ${newData.referenceNumber} est passée à "${newData.statut}"`;
+                        addNotification(message, newData.id);
+                    }
+                }
             });
-            setDemandes(demandesData);
-        }, (error) => {
-            console.error("Erreur d'écoute de la base de données : ", error);
-            alert("Impossible de se connecter à la base de données en temps réel.");
+            const fullDemandesList = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            setDemandes(fullDemandesList);
+            demandesRef.current = fullDemandesList;
         });
-
         return () => unsubscribe();
     }, []);
 
+    const handleBellClick = () => {
+        setIsPanelOpen(prev => !prev);
+        markAsRead();
+    };
+    
+    const handleNotificationClick = (demandeId) => {
+        const demandeToOpen = demandes.find(d => d.id === demandeId);
+        if (demandeToOpen) {
+            setSelectedDemande(demandeToOpen);
+            setIsPanelOpen(false);
+        }
+    };
+    
+    const handleChangePassword = async (newPassword) => {
+        if (!auth.currentUser) { return; }
+        try {
+            await updatePassword(auth.currentUser, newPassword);
+            alert("Mot de passe modifié avec succès !");
+            setIsPasswordPopupOpen(false);
+        } catch (error) {
+            console.error("Erreur lors de la modification du mot de passe:", error);
+            alert("Une erreur est survenue. Le mot de passe n'a pas pu être modifié.");
+        }
+    };
     const handleOpenPopup = () => setIsPopupOpen(true);
     const handleClosePopup = () => setIsPopupOpen(false);
     const handleOpenSearchPopup = () => setIsSearchPopupOpen(true);
     const handleCloseSearchPopup = () => setIsSearchPopupOpen(false);
-
-    const handleSearch = (criteres) => {
-        setSearchCriteres(criteres);
-        setActiveTab('toutes');
-        handleCloseSearchPopup();
-    };
-
+    const handleSearch = (criteres) => { setSearchCriteres(criteres); setActiveTab('toutes'); handleCloseSearchPopup(); };
     const handleNewDemandeSubmit = async (newDemande) => {
         try {
             const referenceNumber = Math.floor(100000 + Math.random() * 900000);
-            const finalDemande = {
-                referenceNumber: `DEM-${referenceNumber}`,
-                bureau: currentUser,
-                titreComplet: `${newDemande.domaine}${newDemande.specialite ? ` - ${newDemande.specialite}` : ''}${newDemande.epreuve ? ` (${newDemande.epreuve})` : ''}`,
-                statut: 'En attente',
-                dateCreation: new Date().toISOString(),
-                ...newDemande,
-                intervenantsRecrutes: [],
-                numeroMission: '',
-                gestionnaireDEC1: ''
-            };
-
+            const finalDemande = { referenceNumber: `DEM-${referenceNumber}`, bureau: currentUser, titreComplet: `${newDemande.domaine}${newDemande.specialite ? ` - ${newDemande.specialite}` : ''}${newDemande.epreuve ? ` (${newDemande.epreuve})` : ''}`, statut: 'En attente', dateCreation: new Date().toISOString(), ...newDemande, intervenantsRecrutes: [], numeroMission: '', gestionnaireDEC1: '' };
             await addDoc(collection(db, "demandes"), finalDemande);
             handleClosePopup();
             alert('Demande créée avec succès !');
-
-        } catch (error) {
-            console.error("Erreur lors de l'ajout de la demande : ", error);
-            alert("Une erreur est survenue. La demande n'a pas pu être créée.");
-        }
+        } catch (error) { console.error("Erreur lors de l'ajout de la demande : ", error); alert("Une erreur est survenue."); }
     };
-
     const handleCardClick = (demande) => setSelectedDemande(demande);
     const handleCloseDetailsPopup = () => setSelectedDemande(null);
-
-    // ========================================================================
-    // FONCTION MODIFIÉE POUR LA MISE À JOUR DANS FIRESTORE
-    // ========================================================================
     const handleUpdateStatus = async (id, newStatus, updatedData) => {
-        // On cible le document spécifique dans la base de données grâce à son ID
         const demandeDocRef = doc(db, "demandes", id);
-
         try {
-            // On prépare l'objet avec toutes les nouvelles données
-            const dataToUpdate = {
-                statut: newStatus,
-                ...updatedData
-            };
-            
-            // On envoie la mise à jour à Firebase
-            await updateDoc(demandeDocRef, dataToUpdate);
-
-            // Pas besoin de mettre à jour l'état local, onSnapshot s'en occupe !
-            // On peut fermer le popup de détails (qui est géré par selectedDemande)
-            // car les données seront mises à jour en arrière-plan.
-            
-        } catch (error) {
-            console.error("Erreur lors de la mise à jour de la demande : ", error);
-            alert("La mise à jour a échoué.");
-        }
+            await updateDoc(demandeDocRef, { statut: newStatus, ...updatedData });
+        } catch (error) { console.error("Erreur lors de la mise à jour : ", error); alert("La mise à jour a échoué."); }
     };
-
-    const handleSort = (key) => {
-        if (sortKey === key) {
-            setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
-        } else {
-            setSortKey(key);
-            setSortDirection('asc');
-        }
-    };
-
+    const handleSort = (key) => { if (sortKey === key) { setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc'); } else { setSortKey(key); setSortDirection('asc'); } };
     const filteredAndSortedDemandes = useMemo(() => {
         let filtered = isDEC1 ? demandes : demandes.filter(d => d.bureau === currentUser);
-
         const criteres = Object.entries(searchCriteres).filter(([, value]) => value && String(value).trim() !== '');
         if (criteres.length > 0) {
             filtered = filtered.filter(demande => {
                 return criteres.every(([key, value]) => {
                     const lowerValue = String(value).toLowerCase();
-                    if (key === 'nomIntervenant') {
-                        return demande.intervenantsRecrutes?.some(name => name.toLowerCase().includes(lowerValue));
-                    }
-                    if (key === 'date') {
-                        return demande.intervenants?.flatMap(int => int.dates?.map(d => d.date)).includes(value);
-                    }
+                    if (key === 'nomIntervenant') { return demande.intervenantsRecrutes?.some(name => name.toLowerCase().includes(lowerValue)); }
+                    if (key === 'date') { return demande.intervenants?.flatMap(int => int.dates?.map(d => d.date)).includes(value); }
                     const demandeValue = String(demande[key] || '').toLowerCase();
                     return demandeValue.includes(lowerValue);
                 });
             });
         }
-        
         if (activeTab !== 'toutes') {
-            const statutMap = {
-                attente: 'En attente',
-                cours: 'En cours',
-                terminees: 'Terminée',
-                annulees: 'Annulée'
-            };
+            const statutMap = { attente: 'En attente', cours: 'En cours', terminees: 'Terminée', annulees: 'Annulée' };
             filtered = filtered.filter(d => d.statut === statutMap[activeTab]);
         }
-
         return [...filtered].sort((a, b) => {
             let aValue = a[sortKey];
             let bValue = b[sortKey];
-            
-            if (sortKey === 'dateCreation') {
-                aValue = new Date(aValue);
-                bValue = new Date(bValue);
-            }
-
+            if (sortKey === 'dateCreation') { aValue = new Date(aValue); bValue = new Date(bValue); }
             if (aValue < bValue) return sortDirection === 'asc' ? -1 : 1;
             if (aValue > bValue) return sortDirection === 'asc' ? 1 : -1;
             return 0;
         });
     }, [demandes, activeTab, searchCriteres, currentUser, isDEC1, sortKey, sortDirection]);
-
     const tabCounts = useMemo(() => {
         const userRequests = isDEC1 ? demandes : demandes.filter(d => d.bureau === currentUser);
-        return {
-            attente: userRequests.filter(d => d.statut === 'En attente').length,
-            cours: userRequests.filter(d => d.statut === 'En cours').length,
-            terminees: userRequests.filter(d => d.statut === 'Terminée').length,
-            annulees: userRequests.filter(d => d.statut === 'Annulée').length,
-            toutes: userRequests.length,
-        };
+        return { attente: userRequests.filter(d => d.statut === 'En attente').length, cours: userRequests.filter(d => d.statut === 'En cours').length, terminees: userRequests.filter(d => d.statut === 'Terminée').length, annulees: userRequests.filter(d => d.statut === 'Annulée').length, toutes: userRequests.length, };
     }, [demandes, currentUser, isDEC1]);
-
-    // Met à jour la popup si la demande sélectionnée change
     useEffect(() => {
         if (selectedDemande) {
             const updatedDemande = demandes.find(d => d.id === selectedDemande.id);
@@ -180,15 +142,22 @@ function ManagementPage({ currentUser, onLogout }) {
         <div className="management-page">
             <div className="management-header">
                 <div className="container">
-                    <button className="logout-btn" onClick={onLogout}>Déconnexion</button>
                     <h1>Gestion des demandes</h1>
                     <p>Bureau : <span>{currentUser}</span></p>
+                    <div className="account-actions">
+                        <NotificationBell onClick={handleBellClick} />
+                        <button className="account-btn" onClick={() => setIsPasswordPopupOpen(true)}>Modifier le mot de passe</button>
+                        <button className="logout-btn" onClick={onLogout}>Déconnexion</button>
+                    </div>
+                    {isPanelOpen && <NotificationPanel onNotificationClick={handleNotificationClick} />}
                 </div>
             </div>
+            
             <div className="management-content">
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
                     <button className="new-request-btn" onClick={handleOpenPopup}>+ Nouvelle demande</button>
-                    <button className="new-request-btn" onClick={handleOpenSearchPopup}>Rechercher une demande</button>
+                    {/* LA CORRECTION EST ICI */}
+                    <button className="search-request-btn" onClick={handleOpenSearchPopup}>Rechercher une demande</button>
                 </div>
                 <div className="tabs-section">
                     <div className="tabs-header">
@@ -222,6 +191,12 @@ function ManagementPage({ currentUser, onLogout }) {
                     onUpdateStatus={handleUpdateStatus}
                     isDEC1={isDEC1}
                     currentUser={currentUser}
+                />
+            )}
+            {isPasswordPopupOpen && (
+                <PasswordChangePopup
+                    onClose={() => setIsPasswordPopupOpen(false)}
+                    onChangePassword={handleChangePassword}
                 />
             )}
         </div>

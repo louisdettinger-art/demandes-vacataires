@@ -2,6 +2,7 @@
 
 import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
+import { getAuth } from "firebase/auth";
 
 // Votre configuration personnelle pour l'application Firebase
 const firebaseConfig = {
@@ -14,9 +15,9 @@ const firebaseConfig = {
   measurementId: "G-FHZMBP4BKE"
 };
 
-// Initialiser Firebase
+// Initialiser les services Firebase
 const app = initializeApp(firebaseConfig);
 
-// Initialiser et exporter l'instance de la base de données Firestore
-// C'est cette ligne qui rend "db" disponible pour le reste de votre application.
+// Exporter les instances pour les utiliser dans toute l'application
 export const db = getFirestore(app);
+export const auth = getAuth(app);
