@@ -18,7 +18,7 @@ function LoginPage({ onLogin }) {
         if (password === expectedPassword) {
             onLogin(bureau);
         } else {
-            alert('Mot de passe incorrect. Utilisez : ' + expectedPassword);
+            alert('Bureau ou mot de passe incorrect.');
         }
     };
 
@@ -42,8 +42,8 @@ function LoginPage({ onLogin }) {
                         <option value="DEC1">DEC1</option>
                         <option value="DEC2">DEC2</option>
                         <option value="DEC3">DEC3</option>
-                        <option value="DEC4">DEC4</option>
-                        <option value="DEC5">DEC5</option>
+                        {/* MODIFICATION : DEC4 et DEC5 sont remplacés par DEC45 */}
+                        <option value="DEC45">DEC45</option> 
                         <option value="DEC6">DEC6</option>
                         <option value="DEC7">DEC7</option>
                         <option value="DEC8">DEC8</option>
