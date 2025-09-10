@@ -1,4 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import { db } from '../firebase';
+import { collection, addDoc, onSnapshot } from "firebase/firestore"; 
 import NewRequestPopup from './NewRequestPopup';
 import RequestCard from './RequestCard';
 import RequestDetailsPopup from './RequestDetailsPopup';
@@ -6,31 +8,31 @@ import AnnulationPopup from './AnnulationPopup';
 import SearchPopup from './SearchPopup';
 
 function ManagementPage({ currentUser, onLogout }) {
-    const [demandes, setDemandes] = useState(() => {
-        try {
-            const saved = localStorage.getItem('demandesDatabase');
-            return saved ? JSON.parse(saved) : [];
-        } catch (e) {
-            console.error('Erreur lors du chargement du Local Storage :', e);
-            localStorage.removeItem('demandesDatabase');
-            return [];
-        }
-    });
-
+    const [demandes, setDemandes] = useState([]);
     const [isPopupOpen, setIsPopupOpen] = useState(false);
     const [isSearchPopupOpen, setIsSearchPopupOpen] = useState(false);
-    const [activeTab, setActiveTab] = useState('attente');
+    const [activeTab, setActiveTab] useState('attente');
     const [selectedDemande, setSelectedDemande] = useState(null);
     const [searchCriteres, setSearchCriteres] = useState({});
     const isDEC1 = currentUser === 'DEC1';
-
-    // CORRECTION : Déclaration des états manquants pour le tri
     const [sortKey, setSortKey] = useState('dateCreation');
-    const [sortDirection, setSortDirection] = useState('desc'); // 'desc' pour voir les plus récents en premier
+    const [sortDirection, setSortDirection] = useState('desc');
 
     useEffect(() => {
-        localStorage.setItem('demandesDatabase', JSON.stringify(demandes));
-    }, [demandes]);
+        const q = collection(db, "demandes");
+        const unsubscribe = onSnapshot(q, (querySnapshot) => {
+            const demandesData = [];
+            querySnapshot.forEach((doc) => {
+                demandesData.push({ id: doc.id, ...doc.data() });
+            });
+            setDemandes(demandesData);
+        }, (error) => {
+            console.error("Erreur d'écoute de la base de données : ", error);
+            alert("Impossible de se connecter à la base de données en temps réel.");
+        });
+
+        return () => unsubscribe();
+    }, []);
 
     const handleOpenPopup = () => setIsPopupOpen(true);
     const handleClosePopup = () => setIsPopupOpen(false);
@@ -43,38 +45,32 @@ function ManagementPage({ currentUser, onLogout }) {
         handleCloseSearchPopup();
     };
 
-    const handleNewDemandeSubmit = (newDemande) => {
-        if (!newDemande.domaine || !newDemande.gestionnaire || !newDemande.codeCentre || !newDemande.libelleCentre || !newDemande.ville) {
-            alert('Veuillez remplir tous les champs obligatoires.');
-            return;
+    const handleNewDemandeSubmit = async (newDemande) => {
+        console.log("handleNewDemandeSubmit a bien été appelée avec les données :", newDemande);
+
+        try {
+            const referenceNumber = Math.floor(100000 + Math.random() * 900000);
+            const finalDemande = {
+                referenceNumber: `DEM-${referenceNumber}`,
+                bureau: currentUser,
+                titreComplet: `${newDemande.domaine}${newDemande.specialite ? ` - ${newDemande.specialite}` : ''}${newDemande.epreuve ? ` (${newDemande.epreuve})` : ''}`,
+                statut: 'En attente',
+                dateCreation: new Date().toISOString(),
+                ...newDemande,
+                intervenantsRecrutes: [],
+                numeroMission: '',
+                gestionnaireDEC1: ''
+            };
+
+            await addDoc(collection(db, "demandes"), finalDemande);
+            
+            handleClosePopup();
+            alert('Demande créée avec succès !');
+
+        } catch (error) {
+            console.error("Erreur lors de l'ajout de la demande : ", error);
+            alert("Une erreur est survenue. La demande n'a pas pu être créée.");
         }
-
-        const hasValidIntervenants = newDemande.intervenants.some(intervenant =>
-            intervenant.type && intervenant.nombre > 0 && intervenant.dates.some(date => date.date && date.heureDebut && date.heureFin)
-        );
-
-        if (!hasValidIntervenants) {
-            alert("Veuillez ajouter au moins un type d'intervenant avec un nombre et une date/heure valide.");
-            return;
-        }
-
-        const referenceNumber = Math.floor(100000 + Math.random() * 900000);
-        const finalDemande = {
-            id: Date.now(),
-            referenceNumber: `DEM-${referenceNumber}`,
-            bureau: currentUser,
-            titreComplet: `${newDemande.domaine}${newDemande.specialite ? ` - ${newDemande.specialite}` : ''}${newDemande.epreuve ? ` (${newDemande.epreuve})` : ''}`,
-            statut: 'En attente',
-            dateCreation: new Date().toISOString(),
-            ...newDemande,
-            intervenantsRecrutes: [],
-            numeroMission: '',
-            gestionnaireDEC1: ''
-        };
-
-        setDemandes(prevDemandes => [...prevDemandes, finalDemande]);
-        handleClosePopup();
-        alert('Demande créée avec succès !');
     };
 
     const handleCardClick = (demande) => setSelectedDemande(demande);
@@ -100,7 +96,6 @@ function ManagementPage({ currentUser, onLogout }) {
         }
     };
 
-    // AMÉLIORATION : Utilisation de useMemo pour optimiser les filtres et le tri.
     const filteredAndSortedDemandes = useMemo(() => {
         let filtered = isDEC1 ? demandes : demandes.filter(d => d.bureau === currentUser);
 
