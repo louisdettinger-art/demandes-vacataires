@@ -1,6 +1,9 @@
 import React, { useState, useEffect, useMemo } from 'react';
+// Imports depuis Firebase - ON AJOUTE doc et updateDoc
 import { db } from '../firebase';
-import { collection, addDoc, onSnapshot } from "firebase/firestore"; 
+import { collection, addDoc, onSnapshot, doc, updateDoc } from "firebase/firestore"; 
+
+// Imports des autres composants
 import NewRequestPopup from './NewRequestPopup';
 import RequestCard from './RequestCard';
 import RequestDetailsPopup from './RequestDetailsPopup';
@@ -11,7 +14,7 @@ function ManagementPage({ currentUser, onLogout }) {
     const [demandes, setDemandes] = useState([]);
     const [isPopupOpen, setIsPopupOpen] = useState(false);
     const [isSearchPopupOpen, setIsSearchPopupOpen] = useState(false);
-    const [activeTab, setActiveTab] = useState('attente'); // LIGNE CORRIGÉE
+    const [activeTab, setActiveTab] = useState('attente');
     const [selectedDemande, setSelectedDemande] = useState(null);
     const [searchCriteres, setSearchCriteres] = useState({});
     const isDEC1 = currentUser === 'DEC1';
@@ -46,8 +49,6 @@ function ManagementPage({ currentUser, onLogout }) {
     };
 
     const handleNewDemandeSubmit = async (newDemande) => {
-        console.log("handleNewDemandeSubmit a bien été appelée avec les données :", newDemande);
-
         try {
             const referenceNumber = Math.floor(100000 + Math.random() * 900000);
             const finalDemande = {
@@ -63,7 +64,6 @@ function ManagementPage({ currentUser, onLogout }) {
             };
 
             await addDoc(collection(db, "demandes"), finalDemande);
-            
             handleClosePopup();
             alert('Demande créée avec succès !');
 
@@ -76,15 +76,31 @@ function ManagementPage({ currentUser, onLogout }) {
     const handleCardClick = (demande) => setSelectedDemande(demande);
     const handleCloseDetailsPopup = () => setSelectedDemande(null);
 
-    const handleUpdateStatus = (id, newStatus, updatedData) => {
-        const updatedDemandes = demandes.map(demande => {
-            if (demande.id === id) {
-                return { ...demande, ...updatedData, statut: newStatus };
-            }
-            return demande;
-        });
-        setDemandes(updatedDemandes);
-        setSelectedDemande(prev => ({ ...prev, ...updatedData, statut: newStatus }));
+    // ========================================================================
+    // FONCTION MODIFIÉE POUR LA MISE À JOUR DANS FIRESTORE
+    // ========================================================================
+    const handleUpdateStatus = async (id, newStatus, updatedData) => {
+        // On cible le document spécifique dans la base de données grâce à son ID
+        const demandeDocRef = doc(db, "demandes", id);
+
+        try {
+            // On prépare l'objet avec toutes les nouvelles données
+            const dataToUpdate = {
+                statut: newStatus,
+                ...updatedData
+            };
+            
+            // On envoie la mise à jour à Firebase
+            await updateDoc(demandeDocRef, dataToUpdate);
+
+            // Pas besoin de mettre à jour l'état local, onSnapshot s'en occupe !
+            // On peut fermer le popup de détails (qui est géré par selectedDemande)
+            // car les données seront mises à jour en arrière-plan.
+            
+        } catch (error) {
+            console.error("Erreur lors de la mise à jour de la demande : ", error);
+            alert("La mise à jour a échoué.");
+        }
     };
 
     const handleSort = (key) => {
@@ -151,6 +167,14 @@ function ManagementPage({ currentUser, onLogout }) {
             toutes: userRequests.length,
         };
     }, [demandes, currentUser, isDEC1]);
+
+    // Met à jour la popup si la demande sélectionnée change
+    useEffect(() => {
+        if (selectedDemande) {
+            const updatedDemande = demandes.find(d => d.id === selectedDemande.id);
+            setSelectedDemande(updatedDemande);
+        }
+    }, [demandes, selectedDemande]);
 
     return (
         <div className="management-page">
