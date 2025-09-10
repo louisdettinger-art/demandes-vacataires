@@ -1,0 +1,19 @@
+body {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.app {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    width: 100vw;
+}
+
+/* Assurer que la page de gestion prend tout l'espace */
+.management-page {
+    width: 100%;
+    max-width: 100vw;
+}

@@ -1,0 +1,16 @@
+# Dependencies
+/node_modules
+
+# Production
+/build
+
+# IDE / Editor folders
+/.vs
+.vscode
+
+# Misc
+.DS_Store
+.env.local
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
