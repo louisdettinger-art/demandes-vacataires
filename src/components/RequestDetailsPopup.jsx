@@ -26,7 +26,7 @@ function RequestDetailsPopup({ demande, onClose, onUpdateStatus, isDEC1, current
             setGestionnaireDEC1(demande.gestionnaireDEC1 || '');
         }
     }, [demande]);
-
+    
     const generatePDF = () => {
         const doc = new jsPDF();
         let y = 15;
@@ -42,60 +42,57 @@ function RequestDetailsPopup({ demande, onClose, onUpdateStatus, isDEC1, current
         doc.text("Informations Générales", 14, y);
         y += 7;
         doc.setFont(undefined, 'normal');
-        doc.text(`- Bureau Organisateur: ${demande.bureau}`, 16, y);
-        y += 7;
-        doc.text(`- Domaine: ${demande.domaine}`, 16, y);
-        y += 7;
-        doc.text(`- Gestionnaire: ${demande.gestionnaire}`, 16, y);
-        y += 12;
+        doc.text(`- Bureau Organisateur: ${demande.bureau}`, 16, y); y += 7;
+        doc.text(`- Domaine: ${demande.domaine}`, 16, y); y += 7;
+        doc.text(`- Gestionnaire: ${demande.gestionnaire}`, 16, y); y += 12;
 
-        doc.setFontSize(12);
         doc.setFont(undefined, 'bold');
         doc.text("Lieu de l'épreuve", 14, y);
         y += 7;
         doc.setFont(undefined, 'normal');
-        doc.text(`- Centre: ${demande.libelleCentre} (${demande.codeCentre})`, 16, y);
-        y += 7;
-        doc.text(`- Ville: ${demande.ville}`, 16, y);
-        y += 12;
+        doc.text(`- Centre: ${demande.libelleCentre} (${demande.codeCentre})`, 16, y); y += 7;
+        doc.text(`- Ville: ${demande.ville}`, 16, y); y += 12;
 
-        doc.setFontSize(12);
-        doc.setFont(undefined, 'bold');
-        doc.text("Intervenants requis et horaires", 14, y);
-        y += 7;
-        doc.setFont(undefined, 'normal');
+        doc.setFontSize(14);
+        doc.text("Détail des interventions", 14, y);
+        y += 8;
+        
+        let recruitedIndex = 0;
         demande.intervenants?.forEach(intervenant => {
-            doc.text(`- ${intervenant.nombre} x ${intervenant.type}`, 16, y);
-            y += 6;
+            doc.setFontSize(12);
+            doc.setFont(undefined, 'bold');
+            doc.text(`Groupe : ${intervenant.nombre} x ${intervenant.type}`, 16, y);
+            y += 7;
+            
+            doc.setFont(undefined, 'normal');
+            doc.setFontSize(11);
+
+            for (let i = 0; i < intervenant.nombre; i++) {
+                const nomRecrute = intervenantsRecrutes[recruitedIndex] || "(Poste non pourvu)";
+                doc.text(`  • Intervenant recruté : ${nomRecrute}`, 18, y);
+                y += 6;
+                recruitedIndex++;
+            }
+
+            doc.setFont(undefined, 'italic');
             intervenant.dates?.forEach(dateInfo => {
                 const dateStr = new Date(dateInfo.date).toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' });
-                doc.text(`  Le ${dateStr} de ${dateInfo.heureDebut} à ${dateInfo.heureFin}`, 20, y);
+                // MODIFICATION ICI : On construit le texte avec la condition
+                let scheduleText = `    Horaires : Le ${dateStr} de ${dateInfo.heureDebut} à ${dateInfo.heureFin}`;
+                if (dateInfo.pauseMeridienne) {
+                    scheduleText += " (avec pause méridienne)";
+                }
+                doc.text(scheduleText, 20, y);
                 y += 6;
             });
+            y += 4;
         });
-        y += 6;
-
-        doc.setFontSize(12);
-        doc.setFont(undefined, 'bold');
-        doc.text("Intervenants recrutés", 14, y);
-        y += 7;
-        doc.setFont(undefined, 'normal');
-        const recruited = intervenantsRecrutes.filter(name => name && name.trim() !== '');
-        if (recruited.length > 0) {
-            recruited.forEach(intervenant => {
-                doc.text(`- ${intervenant}`, 16, y);
-                y += 7;
-            });
-        } else {
-            doc.text("Aucun intervenant recruté pour le moment.", 16, y);
-            y += 7;
-        }
         
-        y = 270;
-        doc.setFontSize(10);
+        y = 265; 
+        doc.setFontSize(11);
         doc.setFont(undefined, 'italic');
         doc.text("La Direction des Examens et Concours vous remercie de votre collaboration", 105, y, { align: 'center' });
-        y += 5;
+        y += 6;
         doc.text("et vous souhaite d'excellentes conditions d'examen.", 105, y, { align: 'center' });
 
         doc.save(`recap_demande_${demande.referenceNumber}.pdf`);
@@ -117,7 +114,7 @@ function RequestDetailsPopup({ demande, onClose, onUpdateStatus, isDEC1, current
             alert("La sauvegarde a échoué.");
         }
     };
-
+    
     const handleIntervenantEditChange = (e, index) => {
         const { name, value } = e.target;
         const newIntervenants = [...editedDemande.intervenants];
@@ -270,6 +267,20 @@ function RequestDetailsPopup({ demande, onClose, onUpdateStatus, isDEC1, current
         </>
     );
 
+    const renderRecruitedDisplay = () => {
+        const recruited = intervenantsRecrutes.filter(name => name && name.trim() !== '');
+        if (recruited.length === 0) {
+            return <p>Aucun intervenant recruté pour le moment.</p>;
+        }
+        return (
+            <ul className="recruited-list">
+                {recruited.map((name, index) => (
+                    <li key={index}>{name}</li>
+                ))}
+            </ul>
+        );
+    };
+
     const isMissionAnnulee = statut === 'Annulée';
 
     return (
@@ -331,6 +342,10 @@ function RequestDetailsPopup({ demande, onClose, onUpdateStatus, isDEC1, current
                                 <h3><FaUsers /> Intervenants Requis</h3>
                                 {isEditing ? renderEditableIntervenants() : getIntervenantsAndDatesList()}
                             </div>
+                            <div className="detail-section">
+                                <h3><FaUserCheck /> Personnes recrutées ({totalIntervenantsRecrutes}/{totalIntervenantsRequis})</h3>
+                                {isDEC1 && !isEditing ? renderIntervenantInputs() : renderRecruitedDisplay()}
+                            </div>
                             {isDEC1 && (
                                 <div className="detail-section">
                                     <h3><FaClipboardList /> Gestion DEC1</h3>
@@ -345,10 +360,6 @@ function RequestDetailsPopup({ demande, onClose, onUpdateStatus, isDEC1, current
                                     <div className="form-group">
                                         <label>Statut de la demande</label>
                                         <DemandeStatus statut={statut} onUpdateStatus={handleStatutChange} />
-                                    </div>
-                                    <div className="form-group">
-                                        <h4><FaUserCheck /> Personnes recrutées ({totalIntervenantsRecrutes}/{totalIntervenantsRequis})</h4>
-                                        {renderIntervenantInputs()}
                                     </div>
                                     <div className="annulation-actions">
                                         {!isMissionAnnulee ? (

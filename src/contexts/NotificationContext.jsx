@@ -1,4 +1,4 @@
-// src/contexts/NotificationContext.js
+// src/contexts/NotificationContext.jsx
 
 import React, { createContext, useState, useContext, useEffect } from 'react';
 
@@ -28,7 +28,6 @@ export const NotificationProvider = ({ children }) => {
             demandeId,
             date: new Date().toISOString()
         };
-        // Ajoute la nouvelle notification au début de la liste
         setNotifications(prev => [newNotification, ...prev]);
         setUnreadCount(prev => prev + 1);
     };
@@ -37,11 +36,20 @@ export const NotificationProvider = ({ children }) => {
         setUnreadCount(0);
     };
 
+    const clearNotifications = (callback) => {
+        setNotifications([]);
+        setUnreadCount(0);
+        if (callback) {
+            callback();
+        }
+    };
+
     const value = {
         notifications,
         unreadCount,
         addNotification,
         markAsRead,
+        clearNotifications,
     };
 
     return (

@@ -1,24 +1,41 @@
-/* Styles généraux et reset */
+/* ========================================================================== */
+/* ==                      1. STYLES GÉNÉRAUX & RESET                       == */
+/* ========================================================================== */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
-body, html, #root, .App {
+body, html, #root {
     min-height: 100vh;
     width: 100%;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f8f9fa;
 }
 
-body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+.error-message {
+    color: #dc3545;
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+/* ========================================================================== */
+/* ==                     2. STRUCTURE PRINCIPALE (APP.JSX)                  == */
+/* ========================================================================== */
+.login-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 20px;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 }
 
-/* ========================================================================== */
-/* ==                     STYLES DE LA PAGE DE CONNEXION                     == */
-/* ========================================================================== */
 
+/* ========================================================================== */
+/* ==                     3. PAGE DE CONNEXION                               == */
+/* ========================================================================== */
 .login-container {
     background: white;
     border-radius: 15px;
@@ -26,1102 +43,162 @@ body {
     padding: 40px;
     width: 100%;
     max-width: 450px;
-    margin: 10vh auto; /* Centre le formulaire */
 }
-
-.login-container .header {
-    text-align: center;
-    margin-bottom: 30px;
-}
-
-.login-container .header h1 {
-    color: #2c3e50;
-    font-size: 24px;
-    margin-bottom: 8px;
-    font-weight: 600;
-}
-
-.login-container .header p {
-    color: #7f8c8d;
-    font-size: 14px;
-}
+.login-container .header { text-align: center; margin-bottom: 30px; }
+.login-container .header h1 { color: #2c3e50; font-size: 24px; margin-bottom: 8px; font-weight: 600; }
+.login-container .header p { color: #7f8c8d; font-size: 14px; }
 
 .login-btn {
-    width: 100%;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    padding: 14px;
-    border: none;
-    border-radius: 8px;
-    font-size: 16px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
+    width: 100%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white; padding: 14px; border: none; border-radius: 8px; font-size: 16px;
+    font-weight: 600; cursor: pointer; transition: all 0.3s ease;
+    text-transform: uppercase; letter-spacing: 0.5px;
 }
-
-.login-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
-}
+.login-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3); }
 
 /* ========================================================================== */
-/* ==                      STYLES DE LA PAGE DE GESTION                      == */
+/* ==                      4. PAGE DE GESTION                                == */
 /* ========================================================================== */
-
-.management-page {
-    background: #f8f9fa;
-    width: 100%;
-    min-height: 100vh;
-}
-
 .management-header {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    padding: 20px 0;
-    margin-bottom: 30px;
+    color: white; padding: 20px 0; margin-bottom: 30px;
+    position: relative; z-index: 100;
 }
+.management-header .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; position: relative; }
+.management-header h1 { font-size: 28px; margin-bottom: 5px; }
+.management-header p { opacity: 0.9; font-size: 16px; }
 
-.management-header .container {
-    width: 100%;
-    padding: 0 40px;
-    position: relative; /* Indispensable pour positionner les boutons */
-}
-
-.management-header h1 {
-    font-size: 28px;
-    margin-bottom: 5px;
-}
-
-.management-header p {
-    opacity: 0.9;
-    font-size: 16px;
-}
-
-/* Conteneur pour les boutons "Modifier mot de passe" et "Déconnexion" */
 .account-actions {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    right: 40px;
-    display: flex;
-    gap: 15px;
-    align-items: center;
+    position: absolute; top: 50%; right: 20px; transform: translateY(-50%);
+    display: flex; gap: 15px; align-items: center; z-index: 102;
 }
+.account-btn, .logout-btn {
+    background: rgba(255,255,255,0.2); color: white; border: 1px solid rgba(255,255,255,0.3);
+    padding: 8px 16px; border-radius: 6px; cursor: pointer;
+    font-size: 14px; transition: all 0.2s ease-in-out;
+}
+.account-btn:hover, .logout-btn:hover { background: rgba(255, 255, 255, 0.3); }
 
-/* Style du bouton "Modifier le mot de passe" */
-.account-btn {
-    background: transparent;
-    color: white;
-    border: 1px solid rgba(255, 255, 255, 0.6);
-    padding: 8px 16px;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 14px;
-    transition: all 0.2s ease-in-out;
-}
+.management-content { max-width: 1200px; margin: 0 auto; padding: 0 20px 40px 20px; }
 
-.account-btn:hover {
-    background: rgba(255, 255, 255, 0.15);
-}
+.actions-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 15px; }
+.main-actions { display: flex; gap: 15px; }
 
-/* Style du bouton "Déconnexion" (sans positionnement) */
-.logout-btn {
-    background: rgba(255,255,255,0.2);
-    color: white;
-    border: 1px solid rgba(255,255,255,0.3);
-    padding: 8px 16px;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 14px;
-}
+.new-request-btn { background: linear-gradient(135deg, #28a745 0%, #20c997 100%); }
+.search-request-btn { background: linear-gradient(135deg, #007bff 0%, #0056b3 100%); }
+.new-request-btn, .search-request-btn { color: white; padding: 12px 24px; border: none; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; }
+.new-request-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(40, 167, 69, 0.2); }
+.search-request-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(0, 123, 255, 0.25); }
 
-.management-content {
-    padding: 0 40px 40px 40px;
-}
+.sort-buttons { display: flex; align-items: center; gap: 10px; font-size: 14px; color: #555; }
+.sort-buttons span { font-weight: 500; margin-right: 5px; }
+.sort-btn { background-color: #e9ecef; color: #495057; padding: 8px 15px; border: 1px solid #ced4da; border-radius: 6px; font-size: 14px; cursor: pointer; transition: all 0.2s ease; }
+.sort-btn:hover { background-color: #dee2e6; border-color: #adb5bd; }
+.sort-btn.active { background-color: #6c757d; color: white; border-color: #6c757d; font-weight: 600; }
 
-.new-request-btn {
-    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
-    color: white;
-    padding: 12px 24px;
-    border: none;
-    border-radius: 8px;
-    font-size: 16px;
-    font-weight: 600;
-    cursor: pointer;
-    margin-bottom: 20px;
-    transition: all 0.3s ease;
-}
+.tabs-section { background: white; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.08); overflow: hidden; }
+.tabs-header { display: flex; background: #f8f9fa; border-bottom: 1px solid #e9ecef; }
+.tab-btn { flex: 1; padding: 15px 20px; border: none; background: transparent; cursor: pointer; font-size: 14px; font-weight: 500; color: #6c757d; transition: all 0.3s ease; border-bottom: 3px solid transparent; }
+.tab-btn.active { background: white; color: #667eea; border-bottom-color: #667eea; }
+.tab-content { min-height: 300px; padding: 20px; }
+.no-demands-message { text-align: center; color: #7f8c8d; }
 
-.tabs-section {
-    background: white;
-    border-radius: 10px;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.08);
-    overflow: hidden;
-}
+.request-card { border: 1px solid #e9ecef; padding: 15px; margin-bottom: 15px; border-radius: 8px; transition: all 0.3s ease; cursor: pointer; border-left: 5px solid #ccc; }
+.request-card:hover { border-color: #667eea; box-shadow: 0 5px 15px rgba(102, 126, 234, 0.1); transform: translateY(-2px); }
+.request-card.priority-low { background-color: rgba(40, 167, 69, 0.05); border-left-color: #28a745; }
+.request-card.priority-medium { background-color: rgba(255, 193, 7, 0.05); border-left-color: #ffc107; }
+.request-card.priority-high { background-color: rgba(220, 53, 69, 0.05); border-left-color: #dc3545; }
 
-.tabs-header {
-    display: flex;
-    background: #f8f9fa;
-    border-bottom: 1px solid #e9ecef;
-}
-
-.tab-btn {
-    flex: 1;
-    padding: 15px 20px;
-    border: none;
-    background: transparent;
-    cursor: pointer;
-    font-size: 14px;
-    font-weight: 500;
-    color: #6c757d;
-    transition: all 0.3s ease;
-    border-bottom: 3px solid transparent;
-}
-
-.tab-btn.active {
-    background: white;
-    color: #667eea;
-    border-bottom-color: #667eea;
-}
-
-.tab-content {
-    min-height: 300px;
-    padding: 20px;
-}
-
-.request-card {
-    border: 1px solid #e9ecef;
-    padding: 15px;
-    margin-bottom: 15px;
-    border-radius: 8px;
-    transition: all 0.3s ease;
-    cursor: pointer;
-}
-
-.request-card:hover {
-    border-color: #667eea;
-    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.1);
-    transform: translateY(-2px);
-}
-
-.request-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 10px;
-}
-
-.status {
-    padding: 4px 12px;
-    border-radius: 20px;
-    font-size: 12px;
-    font-weight: 600;
-}
-
-.status-pending {
-    background: #fff3cd;
-    color: #856404;
-}
+.request-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+.status { padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+.status-pending { background-color: #fff3cd; color: #856404; }
+.status-inprogress { background-color: #d1ecf1; color: #0c5460; }
+.status-completed { background-color: #d4edda; color: #155724; }
+.status-cancelled { background-color: #f8d7da; color: #721c24; }
 
 /* ========================================================================== */
-/* ==                         STYLES COMMUNS (POPUPS, FORM)                  == */
+/* ==                    5. STYLES COMMUNS (POPUPS, FORMS)                   == */
 /* ========================================================================== */
+.popup-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.6); display: flex; align-items: center; justify-content: center; z-index: 9999; backdrop-filter: blur(5px); }
+.popup-content { background: white; border-radius: 15px; padding: 30px; width: 95%; max-width: 1000px; max-height: 95vh; overflow-y: auto; box-shadow: 0 20px 40px rgba(0,0,0,0.2); }
+.popup-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 2px solid #e9ecef; }
+.close-btn { background: none; border: none; font-size: 24px; color: #7f8c8d; cursor: pointer; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; }
+.form-group { margin-bottom: 20px; }
+.form-group label { display: block; margin-bottom: 8px; color: #2c3e50; font-weight: 500; font-size: 14px; }
+.form-group select, .form-group input, .form-group textarea { width: 100%; padding: 12px 15px; border: 2px solid #e0e6ed; border-radius: 8px; font-size: 16px; transition: all 0.3s ease; background: white; color: #2c3e50; }
+.form-group select:focus, .form-group input:focus, .form-group textarea:focus { outline: none; border-color: #667eea; box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1); }
+.form-group.remember-me { display: flex; align-items: center; gap: 10px; }
+.form-group.remember-me label { margin-bottom: 0; }
 
-.popup-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 9999;
-    backdrop-filter: blur(5px);
-}
+.form-section { border: 1px solid #e9ecef; border-radius: 10px; padding: 20px; margin-bottom: 25px; background-color: #f8f9fa; }
+.form-section h4 { color: #667eea; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid #e0e6ed; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 25px; margin-bottom: 20px; }
+.form-row.full-width { grid-template-columns: 1fr; }
 
-.popup-content {
-    background: white;
-    border-radius: 15px;
-    padding: 30px;
-    width: 95%;
-    max-width: 1000px;
-    max-height: 95vh;
-    overflow-y: auto;
-    box-shadow: 0 20px 40px rgba(0,0,0,0.2);
-}
+.submit-btn { width: 100%; background: #28a745; color: white; padding: 18px 40px; border: none; border-radius: 10px; font-size: 18px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; text-transform: uppercase; letter-spacing: 0.5px; }
+.submit-btn:disabled { background: #ccc; cursor: not-allowed; }
+.submit-btn:not(:disabled):hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(40, 167, 69, 0.3); }
 
-.popup-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 30px;
-    padding-bottom: 20px;
-    border-bottom: 2px solid #e9ecef;
-}
+.intervenant-group { border: 2px solid #cce5ff; border-radius: 8px; padding: 15px; margin-bottom: 15px; background: #f0f8ff; }
+.intervenant-row { display: grid; grid-template-columns: 2fr 1fr auto; gap: 15px; align-items: end; margin-bottom: 10px; }
+.date-row { display: grid; grid-template-columns: 2fr 1fr 1fr auto; gap: 10px; align-items: center; padding-left: 15px; margin-bottom: 10px; }
+.add-btn, .add-date-btn, .remove-btn { color: white; border: none; border-radius: 6px; padding: 8px 12px; cursor: pointer; font-size: 14px; }
+.add-btn { background: #17a2b8; margin-top: 10px; }
+.add-date-btn { background: #17a2b8; font-size: 12px; }
+.remove-btn { background: #dc3545; }
 
-.close-btn {
-    background: none;
-    border: none;
-    font-size: 24px;
-    color: #7f8c8d;
-    cursor: pointer;
-    padding: 5px;
-    border-radius: 50%;
-    width: 40px;
-    height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
 
-.form-group {
-    margin-bottom: 20px;
-}
-
-.form-group label {
-    display: block;
-    margin-bottom: 8px;
-    color: #2c3e50;
-    font-weight: 500;
-    font-size: 14px;
-}
-
-.form-group select,
-.form-group input,
-.form-group textarea {
-    width: 100%;
-    padding: 12px 15px;
-    border: 2px solid #e0e6ed;
-    border-radius: 8px;
-    font-size: 16px;
-    transition: all 0.3s ease;
-    background: white;
-    color: #2c3e50;
-}
-
-.form-group select:focus,
-.form-group input:focus,
-.form-group textarea:focus {
-    outline: none;
-    border-color: #667eea;
-    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-}
-
-.no-demands-message {
-    text-align: center;
-    color: #7f8c8d;
-}/* ========================================================================== */
-/* ==                  STYLES POUR LE FORMULAIRE DE CRÉATION                 == */
 /* ========================================================================== */
-
-.form-section {
-    border: 1px solid #e9ecef;
-    border-radius: 10px;
-    padding: 20px;
-    margin-bottom: 25px;
-    background-color: #f8f9fa;
-}
-
-.form-section h4 {
-    color: #667eea;
-    margin-bottom: 15px;
-    padding-bottom: 10px;
-    border-bottom: 1px solid #e0e6ed;
-}
-
-.form-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 25px;
-    margin-bottom: 20px;
-}
-
-.form-row.full-width {
-    grid-template-columns: 1fr;
-}
-
-.intervenant-group {
-    border: 2px solid #cce5ff;
-    border-radius: 8px;
-    padding: 15px;
-    margin-bottom: 15px;
-    background: #f0f8ff;
-}
-
-.intervenant-row {
-    display: grid;
-    grid-template-columns: 2fr 1fr auto;
-    gap: 15px;
-    align-items: end;
-    margin-bottom: 10px;
-}
-
-.intervenant-group .dates-intervenant {
-    margin-top: 15px;
-    padding: 15px;
-    background: #ffffff;
-    border-radius: 8px;
-    border: 1px solid #dee2e6;
-}
-
-.intervenant-group .add-date-btn {
-    background: #17a2b8;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    padding: 8px 15px;
-    cursor: pointer;
-    font-size: 12px;
-    margin-top: 10px;
-    transition: all 0.3s ease;
-}
-
-.add-btn {
-    background: #17a2b8;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    padding: 10px 15px;
-    cursor: pointer;
-    font-size: 14px;
-    margin-top: 10px;
-    transition: all 0.3s ease;
-}
-
-.remove-btn {
-    background: #dc3545;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    padding: 8px 12px;
-    cursor: pointer;
-    font-size: 14px;
-}
-
-.date-group {
-    background: #ffffff;
-    border-radius: 8px;
-    padding: 10px;
-    margin-bottom: 10px;
-}
-
-.date-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr auto auto;
-    gap: 10px;
-    align-items: center;
-}
-
-.submit-btn {
-    width: 100%;
-    background: #28a745;
-    color: white;
-    padding: 18px 40px;
-    border: none;
-    border-radius: 10px;
-    font-size: 18px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-.submit-btn:disabled {
-    background: #ccc;
-    cursor: not-allowed;
-}
-
-.submit-btn:not(:disabled):hover {
-    transform: translateY(-2px);
-    box-shadow: 0 10px 20px rgba(40, 167, 69, 0.3);
-}
-/* Style pour le bouton de recherche */
-.search-request-btn {
-    background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
-    color: white;
-    padding: 12px 24px;
-    border: none;
-    border-radius: 8px;
-    font-size: 16px;
-    font-weight: 600;
-    cursor: pointer;
-    margin-bottom: 20px;
-    transition: all 0.3s ease;
-}
-
-.search-request-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 10px 20px rgba(0, 123, 255, 0.25);
-}/* ========================================================================== */
-/* ==                 STYLES POUR LA POPUP DE DÉTAILS DE DEMANDE            == */
+/* ==                 6. STYLES SPÉCIFIQUES POPUP DE DÉTAILS                 == */
 /* ========================================================================== */
+.request-details-popup .popup-header { position: relative; }
+.request-details-popup .header-actions { position: absolute; right: 60px; top: 50%; transform: translateY(-50%); display: flex; gap: 10px; align-items: center; }
+.request-details-popup .detail-section h3 { color: #667eea; }
+.request-details-popup .detail-item { display: flex; margin-bottom: 12px; font-size: 15px; line-height: 1.6; align-items: center; }
+.request-details-popup .detail-item strong { font-weight: 600; color: #495057; width: 150px; flex-shrink: 0; }
+.request-details-popup .detail-item input, .request-details-popup .detail-item textarea { font-size: 14px; padding: 8px; }
 
-.request-details-popup .popup-content {
-    max-width: 900px; /* Plus large pour afficher plus d'informations */
-    width: 90%;
-    max-height: 90vh; /* Permet un grand contenu mais reste défilable */
-    overflow-y: auto; /* Rend la popup défilable si le contenu est trop grand */
-}
+.intervenant-group-details { margin-bottom: 15px; }
+.intervenant-item { background: #e9ecef; padding: 8px 15px; border-radius: 6px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; font-size: 15px; }
+.intervenant-item strong { font-size: 16px; color: #667eea; }
+.dates-section { padding-left: 20px; border-left: 2px solid #e0e6ed; margin-left: 10px; }
+.date-item { margin-bottom: 10px; }
+.date-time { display: flex; align-items: center; gap: 10px; font-size: 14px; }
+.pause-indicator { background-color: #ffecb3; color: #343a40; padding: 3px 8px; border-radius: 20px; font-size: 12px; font-weight: 600; }
 
-.request-details-popup .popup-header h2 {
-    color: #333;
-    font-size: 24px;
-    margin-bottom: 10px;
-}
+.recruited-list { list-style-type: none; padding-left: 0; }
+.recruited-list li { background-color: #e6f7ff; border-left: 4px solid #17a2b8; padding: 10px 15px; margin-bottom: 8px; border-radius: 4px; font-weight: 500; }
+.recruitment-group { margin-bottom: 20px; padding: 15px; border: 1px solid #e0e6ed; border-radius: 8px; background-color: #f8f9fa; }
+.recruitment-group h4 { margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid #dee2e6; color: #495057; font-size: 16px; }
 
-.request-details-popup .detail-section {
-    background-color: #f8f9fa;
-    border: 1px solid #e9ecef;
-    border-radius: 8px;
-    padding: 20px;
-    margin-bottom: 20px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-}
-
-.request-details-popup .detail-section h3 {
-    color: #667eea;
-    font-size: 18px;
-    margin-bottom: 15px;
-    padding-bottom: 10px;
-    border-bottom: 1px solid #dee2e6;
-}
-
-.request-details-popup .detail-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr; /* Deux colonnes par défaut */
-    gap: 15px 30px; /* Espacement entre les lignes et les colonnes */
-}
-
-.request-details-popup .detail-item {
-    font-size: 15px;
-    line-height: 1.6;
-}
-
-.request-details-popup .detail-item strong {
-    color: #555;
-    display: block; /* Le label sur une ligne, la valeur en dessous */
-    margin-bottom: 3px;
-    font-size: 13px; /* Taille légèrement plus petite pour le label */
-    text-transform: uppercase;
-}
-
-.request-details-popup .detail-item span {
-    color: #333;
-    font-weight: normal;
-}
-
-/* Styles pour les intervenants dans la popup de détails */
-.intervenant-list-details ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-}
-
-.intervenant-list-details li {
-    background-color: #e6f7ff; /* Bleu très clair */
-    border: 1px solid #91d5ff; /* Bordure bleue */
-    border-radius: 6px;
-    padding: 10px 15px;
-    margin-bottom: 10px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 14px;
-    color: #0056b3; /* Texte bleu foncé */
-}
-
-.intervenant-list-details li strong {
-    font-weight: 600;
-    color: #003a7a;
-}
-
-.intervenant-list-details li span {
-    font-style: italic;
-    color: #0056b3;
-}
-
-.date-list-details {
-    margin-top: 5px;
-    padding-left: 15px;
-    font-size: 13px;
-    color: #4a4a4a;
-}
-
-.date-list-details p {
-    margin-bottom: 3px;
-}
-
-/* Styles pour les actions DEC1 dans la popup de détails */
-.dec1-actions {
-    background-color: #fff3cd; /* Jaune très clair */
-    border: 1px solid #ffeeba; /* Bordure jaune */
-    border-radius: 8px;
-    padding: 15px;
-    margin-top: 20px;
-}
-
-.dec1-actions h4 {
-    color: #856404; /* Texte jaune foncé */
-    margin-bottom: 15px;
-    font-size: 16px;
-    border-bottom: 1px solid #ffeeba;
-    padding-bottom: 10px;
-}
-
-.dec1-actions .form-group {
-    margin-bottom: 15px;
-}
-
-.dec1-actions select, .dec1-actions input[type="text"] {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid #ced4da;
-    border-radius: 5px;
-    font-size: 14px;
-}
-
-.dec1-actions .action-buttons {
-    display: flex;
-    gap: 10px;
-    margin-top: 15px;
-    justify-content: flex-end;
-}
-
-.dec1-actions .action-buttons button {
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-weight: 500;
-    transition: background-color 0.2s ease;
-}
-
-.dec1-actions .btn-assign {
-    background-color: #28a745; /* Vert pour assigner */
-    color: white;
-}
-
-.dec1-actions .btn-assign:hover {
-    background-color: #218838;
-}
-
-.dec1-actions .btn-cancel {
-    background-color: #dc3545; /* Rouge pour annuler */
-    color: white;
-}
-
-.dec1-actions .btn-cancel:hover {
-    background-color: #c82333;
-}
-
-.dec1-actions .btn-complete {
-    background-color: #007bff; /* Bleu pour terminer */
-    color: white;
-}
-
-.dec1-actions .btn-complete:hover {
-    background-color: #0056b3;
-}
-
-
-/* Adaptations pour les écrans plus petits (mobile) */
-@media (max-width: 768px) {
-    .request-details-popup .popup-content {
-        width: 95%;
-        margin: 10px;
-        padding: 15px;
-    }
-
-    .request-details-popup .detail-grid {
-        grid-template-columns: 1fr; /* Une seule colonne sur mobile */
-    }
-
-    .dec1-actions .action-buttons {
-        flex-direction: column; /* Boutons en colonne sur mobile */
-    }
-}/* ========================================================================== */
-/* ==       STYLES RESTAURÉS POUR LA POPUP DE DÉTAILS DE DEMANDE            == */
-/* ========================================================================== */
-
-/* Mise en page générale des items de détails */
-.detail-item {
-    display: flex;
-    margin-bottom: 10px;
-    font-size: 15px;
-}
-.detail-item strong {
-    font-weight: 600;
-    color: #495057;
-    width: 150px;
-    flex-shrink: 0;
-}
-.detail-item span {
-    color: #2c3e50;
-    flex-grow: 1;
-}
-
-/* Style pour les groupes d'intervenants dans les détails */
-.intervenant-group-details {
-    margin-bottom: 15px;
-}
-.intervenant-item {
-    background: #e9ecef;
-    padding: 8px 15px;
-    border-radius: 6px;
-    margin-bottom: 8px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 15px;
-}
-.intervenant-item strong {
-    font-size: 16px;
-    color: #667eea;
-}
-.dates-section {
-    padding-left: 20px;
-    border-left: 2px solid #e0e6ed;
-    margin-left: 10px;
-}
-.date-item {
-    margin-bottom: 10px;
-}
-.date-time {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-size: 14px;
-}
-
-/* Style pour l'indicateur de pause méridienne */
-.pause-indicator {
-    background-color: #ffecb3;
-    color: #343a40;
-    padding: 3px 8px;
-    border-radius: 20px;
-    font-size: 12px;
-    font-weight: 600;
-}
-
-/* Styles pour les boutons de statut (composant DemandeStatus) */
-.status-buttons {
-    display: flex;
-    gap: 10px;
-    margin-top: 10px;
-}
-.status-btn {
-    padding: 10px 15px; /* Augmentation de la taille */
-    border: 2px solid transparent;
-    border-radius: 8px;
-    font-weight: 600;
-    cursor: pointer;
-    color: white;
-    transition: all 0.3s ease;
-    opacity: 0.7;
-    font-size: 14px; /* Augmentation de la taille */
-}
-.status-btn:hover {
-    opacity: 1;
-    transform: translateY(-2px);
-}
-.status-btn.active {
-    opacity: 1;
-    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.5), 0 5px 10px rgba(0,0,0,0.1);
-}
-.status-btn.en-attente { background-color: #ffc107; }
-.status-btn.en-cours { background-color: #17a2b8; }
-.status-btn.terminee { background-color: #28a745; }
-
-
-/* Boutons d'action Enregistrer, Annuler, Réactiver */
-.annulation-actions {
-    display: flex;
-    gap: 15px;
-    justify-content: flex-end;
-    margin-top: 20px;
-    border-top: 1px solid #e0e6ed;
-    padding-top: 20px;
-}
-.save-changes-btn, .annuler-btn, .reactiver-btn {
-    padding: 12px 24px;
-    border: none;
-    border-radius: 8px;
-    font-size: 16px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
+.annulation-actions { display: flex; gap: 15px; justify-content: flex-end; margin-top: 20px; border-top: 1px solid #e0e6ed; padding-top: 20px; }
+.save-changes-btn, .annuler-btn, .reactiver-btn, .delete-btn { padding: 10px 20px; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; }
 .save-changes-btn { background: #007bff; color: white; }
-.annuler-btn { background-color: #dc3545; color: white; }
+.annuler-btn { background-color: #6c757d; color: white; }
 .reactiver-btn { background-color: #28a745; color: white; }
-
+.delete-btn { background-color: #dc3545; color: white; }
 .save-changes-btn:hover { background: #0056b3; }
-.annuler-btn:hover { background-color: #c82333; }
-.reactiver-btn:hover { background-color: #218838; }/* Styles pour le bouton "Modifier la demande" en haut */
-.edit-btn {
-    background-color: #ffc107;
-    color: #212529;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 8px;
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-.edit-btn:hover {
-    background-color: #e0a800;
-}
+.annuler-btn:hover { background-color: #5a6268; }
+.reactiver-btn:hover { background-color: #218838; }
+.delete-btn:hover { background-color: #c82333; }
+.save-changes-btn:disabled, .annuler-btn:disabled, .delete-btn:disabled { background-color: #e9ecef; color: #6c757d; cursor: not-allowed; transform: none; box-shadow: none; }
 
-/* Styles pour le formulaire d'édition des intervenants */
-.detail-section .intervenant-group {
-    border: 1px solid #dee2e6;
-    background: #f8f9fa;
-    padding: 15px;
-    border-radius: 8px;
-    margin-bottom: 15px;
-}
+.edit-btn { background-color: #ffc107; color: #212529; padding: 8px 15px; border: none; border-radius: 6px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; display: flex; align-items: center; gap: 8px; }
+.edit-btn:hover { background-color: #e0a800; }
 
-.detail-section .intervenant-row, .detail-section .date-row {
-    display: grid;
-    gap: 10px;
-    align-items: center;
-    margin-bottom: 10px;
-}
-
-.detail-section .intervenant-row {
-    grid-template-columns: 2fr 1fr auto;
-}
-
-.detail-section .date-row {
-    grid-template-columns: 2fr 1fr 1fr auto;
-    padding-left: 15px;
-}/* Dans src/App.css */
-
-.recruitment-group {
-    margin-bottom: 20px;
-    padding: 15px;
-    border: 1px solid #e0e6ed;
-    border-radius: 8px;
-    background-color: #f8f9fa;
-}
-
-.recruitment-group h4 {
-    margin-bottom: 15px;
-    padding-bottom: 10px;
-    border-bottom: 1px solid #dee2e6;
-    color: #495057;
-    font-size: 16px;
-}/* --- Boutons "Nouvelle demande" et "Rechercher une demande" --- */
-.management-content > div:first-child {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-}
-
-.management-content > div:first-child > div:first-child {
-    display: flex; /* Permet aux boutons d'être sur la même ligne */
-    gap: 15px;    /* Augmente l'espacement entre les boutons */
-}
-
-.new-request-btn,
-.search-request-btn {
-    background-color: #007bff; /* Ou votre couleur primaire préférée */
-    color: white;
-    padding: 12px 25px; /* Augmente la taille du padding */
-    border: none;
-    border-radius: 8px;
-    font-size: 15px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Ajout d'une petite ombre */
-}
-
-.new-request-btn:hover,
-.search-request-btn:hover {
-    background-color: #0056b3;
-}
-
-/* --- Boutons de tri "Échéance" et "Date de création" --- */
-.sort-buttons {
-    display: flex;
-    align-items: center;
-    gap: 10px; /* Espacement entre le texte "Trier par" et les boutons, et entre les boutons */
-    font-size: 14px;
-    color: #555;
-}
-
-.sort-buttons span {
-    font-weight: 500;
-    margin-right: 5px; /* Ajuste l'espacement avant les boutons */
-}
-
-.sort-btn {
-    background-color: #e9ecef; /* Couleur de fond par défaut */
-    color: #495057;
-    padding: 8px 15px; /* Padding plus doux */
-    border: 1px solid #ced4da; /* Bordure légère */
-    border-radius: 6px; /* Bords légèrement arrondis */
-    font-size: 14px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    white-space: nowrap; /* Empêche le texte de passer à la ligne */
-}
-
-.sort-btn:hover {
-    background-color: #dee2e6;
-    border-color: #adb5bd;
-}
-
-.sort-btn.active {
-    background-color: #6c757d; /* Couleur de fond pour le bouton actif */
-    color: white;
-    border-color: #6c757d;
-    font-weight: 600;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.sort-btn.active:hover {
-    background-color: #5a6268;
-    border-color: #545b62;
-}
-
-
-/* --- Styles existants pour les popups d'édition --- */
-/* Pour éviter que le bouton "Enregistrer Actions DEC1" ne soit désactivé visuellement  */
-.annulation-actions .save-changes-btn:disabled,
-.annulation-actions .annuler-btn:disabled {
-    opacity: 0.6; /* Rendre le bouton légèrement transparent */
-    cursor: not-allowed;
-    background-color: #ccc; /* Changer la couleur de fond */
-    color: #666; /* Changer la couleur du texte */
-}
-
-/* Assurez-vous que le style du bouton d'édition initial est bon */
-.edit-btn {
-    background-color: #ffc107;
-    color: #212529;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 8px;
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-.edit-btn:hover {
-    background-color: #e0a800;
-}
-
-/* Styles pour le mode édition des demandes */
-.popup-header .edit-actions {
-    display: flex;
-    gap: 10px;
-}
-
-.popup-header .edit-actions button {
-    padding: 8px 15px;
-    border-radius: 6px;
-    font-size: 13px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: background-color 0.2s ease;
-}
-
-.popup-header .edit-actions .save-changes-btn {
-    background-color: #28a745;
-    color: white;
-    border: 1px solid #28a745;
-}
-.popup-header .edit-actions .save-changes-btn:hover {
-    background-color: #218838;
-}
-
-.popup-header .edit-actions .annuler-btn {
-    background-color: #dc3545;
-    color: white;
-    border: 1px solid #dc3545;
-}
-.popup-header .edit-actions .annuler-btn:hover {
-    background-color: #c82333;
-}
-
-/* Styles pour le formulaire d'édition des intervenants */
-.detail-section .intervenant-group {
-    border: 1px solid #dee2e6;
-    background: #f8f9fa;
-    padding: 15px;
-    border-radius: 8px;
-    margin-bottom: 15px;
-}
-
-.detail-section .intervenant-row, .detail-section .date-row {
-    display: grid;
-    gap: 10px;
-    align-items: center;
-    margin-bottom: 10px;
-}
-
-.detail-section .intervenant-row {
-    grid-template-columns: 2fr 1fr auto;
-}
-
-.detail-section .date-row {
-    grid-template-columns: 2fr 1fr 1fr auto;
-    padding-left: 15px; /* Indente les dates */
-}
-
-.detail-section .intervenant-group .remove-btn,
-.detail-section .add-date-btn {
-    background-color: #dc3545;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    padding: 6px 10px;
-    cursor: pointer;
-    transition: background-color 0.2s ease;
-    font-size: 12px;
-}
-
-.detail-section .intervenant-group .remove-btn:hover {
-    background-color: #c82333;
-}
-
-.detail-section .add-date-btn {
-    background-color: #17a2b8; /* Une couleur différente pour "Ajouter date" */
-    margin-top: 5px;
-    padding: 8px 12px;
-    font-size: 13px;
-}
-.detail-section .add-date-btn:hover {
-    background-color: #138496;
-}
-
-.detail-section .add-btn { /* Bouton "Ajouter un groupe d'intervenants" */
-    background-color: #28a745;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    padding: 10px 15px;
-    cursor: pointer;
-    transition: background-color 0.2s ease;
-    margin-top: 15px;
-    width: fit-content;
-    display: block; /* Pour centrer si besoin ou prendre toute la largeur */
-}
-.detail-section .add-btn:hover {
-    background-color: #218838;
-}
-
-/* Styles pour les groupes d'intervenants recrutés */
-.recruitment-group {
-    margin-bottom: 20px;
-    padding: 15px;
-    border: 1px solid #e0e6ed;
-    border-radius: 8px;
-    background-color: #f8f9fa;
-}
-
-.recruitment-group h4 {
-    margin-bottom: 15px;
-    padding-bottom: 10px;
-    border-bottom: 1px solid #dee2e6;
-    color: #495057;
-    font-size: 16px;
-}/* Dans src/App.css */
-
-/* --- Nouveaux styles pour les cartes de demande urgentes --- */
-
-/* Style de base pour toutes les cartes */
-.request-card {
-    border-left: 5px solid transparent; /* Bordure par défaut */
-    transition: all 0.3s ease;
-    /* ... (vos autres styles pour .request-card) ... */
-}
-
-/* Vert : Échéance > 1 mois */
-.request-card.priority-low {
-    background-color: rgba(40, 167, 69, 0.1); /* Vert très transparent */
-    border-left-color: #28a745; /* Bordure verte solide */
-}
-
-/* Orange : Échéance < 3 semaines */
-.request-card.priority-medium {
-    background-color: rgba(255, 193, 7, 0.1); /* Orange très transparent */
-    border-left-color: #ffc107; /* Bordure orange solide */
-}
-
-/* Rouge : Échéance < 1 semaine */
-.request-card.priority-high {
-    background-color: rgba(220, 53, 69, 0.1); /* Rouge très transparent */
-    border-left-color: #dc3545; /* Bordure rouge solide */
-}/* Dans src/App.css */
-
-.status {
-    padding: 5px 12px;
-    border-radius: 20px;
-    font-size: 12px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-.status-pending {
-    background-color: #fff3cd; /* Jaune */
-    color: #856404;
-}
-.status-inprogress {
-    background-color: #d1ecf1; /* Bleu */
-    color: #0c5460;
-}
-.status-completed {
-    background-color: #d4edda; /* Vert */
-    color: #155724;
-}
-.status-cancelled {
-    background-color: #f8d7da; /* Rouge */
-    color: #721c24;
-}.delete-btn {
-    background-color: #5a6268; /* Gris foncé */
-    color: white;
-}
-.delete-btn:hover {
-    background-color: #494f54;
-}
-
-.confirm-delete-btn {
-    background-color: #dc3545 !important; /* Rouge vif pour confirmer */
-    color: white;
-}
-.confirm-delete-btn:hover {
-    background-color: #c82333 !important;
-}.pdf-btn {
-    background-color: #17a2b8; /* Bleu-vert */
-    color: white;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 8px;
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-.pdf-btn:hover {
-    background-color: #138496;
-}
+/* ========================================================================== */
+/* ==                         7. STYLES NOTIFICATIONS                        == */
+/* ========================================================================== */
+.notification-panel { position: absolute; top: 60px; right: 20px; width: 350px; max-height: 400px; background-color: white; color: #2c3e50; border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); z-index: 101; border: 1px solid #e9ecef; display: flex; flex-direction: column; }
+.notification-bell { position: relative; background: transparent; border: none; color: white; font-size: 20px; cursor: pointer; padding: 8px; }
+.notification-bell svg.unread { color: #ff4d4d; }
+.notification-badge { position: absolute; top: 2px; right: 2px; background-color: #dc3545; color: white; border-radius: 50%; width: 18px; height: 18px; font-size: 10px; font-weight: bold; display: flex; align-items: center; justify-content: center; border: 2px solid #667eea; }
+.no-notification { padding: 40px 20px; text-align: center; color: #7f8c8d; flex-grow: 1; }
+.notification-panel ul { list-style: none; padding: 0; margin: 0; flex-grow: 1; overflow-y: auto; }
+.notification-panel li { padding: 15px; border-bottom: 1px solid #f0f2f5; cursor: pointer; transition: background-color 0.2s ease; }
+.notification-panel li:hover { background-color: #f8f9fa; }
+.notification-message { font-weight: 500; margin-bottom: 5px; font-size: 14px; }
+.notification-date { font-size: 12px; color: #7f8c8d; }
+.notification-footer { padding: 10px; text-align: center; border-top: 1px solid #f0f2f5; background-color: #f8f9fa; flex-shrink: 0; }
+.clear-notifications-btn { background: transparent; border: 1px solid #dc3545; color: #dc3545; padding: 8px 15px; border-radius: 6px; font-size: 12px; font-weight: 500; cursor: pointer; transition: all 0.2s ease; }
+.clear-notifications-btn:hover { background-color: #dc3545; color: white; }

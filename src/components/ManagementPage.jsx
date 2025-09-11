@@ -1,10 +1,10 @@
+// src/components/ManagementPage.jsx
+
 import React, { useState, useEffect, useMemo, useRef } from 'react';
-// On importe "deleteDoc" de firestore
 import { db, auth } from '../firebase';
 import { collection, addDoc, onSnapshot, doc, updateDoc, deleteDoc } from "firebase/firestore"; 
 import { updatePassword } from "firebase/auth";
 import { useNotifications } from '../contexts/NotificationContext';
-// On importe le nouveau popup
 import ConfirmationPopup from './ConfirmationPopup'; 
 import NotificationBell from './NotificationBell';
 import NotificationPanel from './NotificationPanel';
@@ -77,7 +77,6 @@ function ManagementPage({ currentUser, onLogout }) {
     const handleDeleteRequest = async () => {
         const { demandeId } = deleteConfirmation;
         if (!demandeId) return;
-
         const demandeDocRef = doc(db, "demandes", demandeId);
         try {
             await deleteDoc(demandeDocRef);
@@ -93,14 +92,11 @@ function ManagementPage({ currentUser, onLogout }) {
     const triggerDeleteConfirmation = (demandeId) => {
         setDeleteConfirmation({ show: true, demandeId });
     };
-
     const handleBellClick = () => { setIsPanelOpen(prev => !prev); markAsRead(); };
-    
     const handleNotificationClick = (demandeId) => {
         const demandeToOpen = demandes.find(d => d.id === demandeId);
         if (demandeToOpen) { setSelectedDemande(demandeToOpen); setIsPanelOpen(false); }
     };
-
     const handleChangePassword = async (newPassword) => {
         if (!auth.currentUser) { return; }
         try {
@@ -108,24 +104,21 @@ function ManagementPage({ currentUser, onLogout }) {
             alert("Mot de passe modifié avec succès !");
             setIsPasswordPopupOpen(false);
         } catch (error) {
-            console.error("Erreur lors de la modification du mot de passe:", error);
-            alert("Une erreur est survenue. Le mot de passe n'a pas pu être modifié.");
+            console.error("Erreur:", error);
+            alert("Une erreur est survenue.");
         }
     };
-    
     const handleOpenPopup = () => setIsPopupOpen(true);
     const handleClosePopup = () => setIsPopupOpen(false);
     const handleOpenSearchPopup = () => setIsSearchPopupOpen(true);
     const handleCloseSearchPopup = () => setIsSearchPopupOpen(false);
     const handleSearch = (criteres) => { setSearchCriteres(criteres); setActiveTab('toutes'); handleCloseSearchPopup(); };
-    
     const handleNewDemandeSubmit = async (newDemande) => {
         try {
             const referenceNumber = Math.floor(100000 + Math.random() * 900000);
             const finalDemande = { referenceNumber: `DEM-${referenceNumber}`, bureau: currentUser, titreComplet: `${newDemande.domaine}${newDemande.specialite ? ` - ${newDemande.specialite}` : ''}${newDemande.epreuve ? ` (${newDemande.epreuve})` : ''}`, statut: 'En attente', dateCreation: new Date().toISOString(), ...newDemande, intervenantsRecrutes: [], numeroMission: '', gestionnaireDEC1: '' };
             await addDoc(collection(db, "demandes"), finalDemande);
             handleClosePopup();
-
             const echeance = getEarliestDate(newDemande);
             if (echeance) {
                 const now = new Date();
@@ -140,21 +133,18 @@ function ManagementPage({ currentUser, onLogout }) {
                 }
             }
         } catch (error) { 
-            console.error("Erreur lors de l'ajout de la demande : ", error); 
-            alert("Une erreur est survenue lors de la création de la demande."); 
+            console.error("Erreur : ", error); 
+            alert("Une erreur est survenue."); 
         }
     };
-
     const handleCardClick = (demande) => setSelectedDemande(demande);
     const handleCloseDetailsPopup = () => setSelectedDemande(null);
-    
     const handleUpdateStatus = async (id, newStatus, updatedData) => {
         const demandeDocRef = doc(db, "demandes", id);
         try {
             await updateDoc(demandeDocRef, { statut: newStatus, ...updatedData });
-        } catch (error) { console.error("Erreur lors de la mise à jour : ", error); alert("La mise à jour a échoué."); }
+        } catch (error) { console.error("Erreur : ", error); alert("La mise à jour a échoué."); }
     };
-    
     const handleSort = (key) => { 
         if (sortKey === key) { 
             setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc'); 
@@ -163,7 +153,6 @@ function ManagementPage({ currentUser, onLogout }) {
             setSortDirection('asc'); 
         } 
     };
-
     const filteredAndSortedDemandes = useMemo(() => {
         let filtered = isDEC1 ? demandes : demandes.filter(d => d.bureau === currentUser);
         const criteres = Object.entries(searchCriteres).filter(([, value]) => value && String(value).trim() !== '');
@@ -182,12 +171,10 @@ function ManagementPage({ currentUser, onLogout }) {
             const statutMap = { attente: 'En attente', cours: 'En cours', terminees: 'Terminée', annulees: 'Annulée' };
             filtered = filtered.filter(d => d.statut === statutMap[activeTab]);
         }
-        
         const processedDemandes = filtered.map(demande => ({
             ...demande,
             echeance: getEarliestDate(demande)
         }));
-
         return processedDemandes.sort((a, b) => {
             let aValue, bValue;
             if (sortKey === 'echeance') {
@@ -208,7 +195,6 @@ function ManagementPage({ currentUser, onLogout }) {
             return 0;
         });
     }, [demandes, activeTab, searchCriteres, currentUser, isDEC1, sortKey, sortDirection]);
-
     const tabCounts = useMemo(() => {
         const userRequests = isDEC1 ? demandes : demandes.filter(d => d.bureau === currentUser);
         return { 
@@ -219,7 +205,6 @@ function ManagementPage({ currentUser, onLogout }) {
             toutes: userRequests.length, 
         };
     }, [demandes, currentUser, isDEC1]);
-
     useEffect(() => {
         if (selectedDemande) {
             const updatedDemande = demandes.find(d => d.id === selectedDemande.id);
@@ -238,10 +223,9 @@ function ManagementPage({ currentUser, onLogout }) {
                         <button className="account-btn" onClick={() => setIsPasswordPopupOpen(true)}>Modifier le mot de passe</button>
                         <button className="logout-btn" onClick={onLogout}>Déconnexion</button>
                     </div>
-                    {isPanelOpen && <NotificationPanel onNotificationClick={handleNotificationClick} />}
+                    {isPanelOpen && <NotificationPanel onNotificationClick={handleNotificationClick} onClear={() => setIsPanelOpen(false)} />}
                 </div>
             </div>
-            
             <div className="management-content">
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
                     <div>
@@ -282,7 +266,6 @@ function ManagementPage({ currentUser, onLogout }) {
                     </div>
                 </div>
             </div>
-            
             {isPopupOpen && <NewRequestPopup currentUser={currentUser} onClose={handleClosePopup} onSubmit={handleNewDemandeSubmit} />}
             {isSearchPopupOpen && <SearchPopup onSearch={handleSearch} onClose={handleCloseSearchPopup} />}
             {selectedDemande && (

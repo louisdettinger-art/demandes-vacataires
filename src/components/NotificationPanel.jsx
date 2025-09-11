@@ -3,29 +3,37 @@
 import React from 'react';
 import { useNotifications } from '../contexts/NotificationContext';
 
-function NotificationPanel({ onNotificationClick }) {
-    const { notifications } = useNotifications();
+// onClear est la nouvelle prop pour fermer le panneau
+function NotificationPanel({ onNotificationClick, onClear }) {
+    const { notifications, clearNotifications } = useNotifications();
 
-    if (notifications.length === 0) {
-        return (
-            <div className="notification-panel">
-                <p>Aucune notification</p>
-            </div>
-        );
-    }
+    const handleClear = () => {
+        clearNotifications(onClear); // On appelle clearNotifications avec la fonction de fermeture
+    };
 
     return (
         <div className="notification-panel">
-            <ul>
-                {notifications.map(notif => (
-                    <li key={notif.id} onClick={() => onNotificationClick(notif.demandeId)}>
-                        <div className="notification-message">{notif.message}</div>
-                        <div className="notification-date">
-                            {new Date(notif.date).toLocaleString('fr-FR')}
-                        </div>
-                    </li>
-                ))}
-            </ul>
+            {notifications.length === 0 ? (
+                <p className="no-notification">Aucune notification</p>
+            ) : (
+                <>
+                    <ul>
+                        {notifications.map(notif => (
+                            <li key={notif.id} onClick={() => onNotificationClick(notif.demandeId)}>
+                                <div className="notification-message">{notif.message}</div>
+                                <div className="notification-date">
+                                    {new Date(notif.date).toLocaleString('fr-FR')}
+                                </div>
+                            </li>
+                        ))}
+                    </ul>
+                    <div className="notification-footer">
+                        <button className="clear-notifications-btn" onClick={handleClear}>
+                            Effacer les notifications
+                        </button>
+                    </div>
+                </>
+            )}
         </div>
     );
 }

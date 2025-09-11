@@ -27,7 +27,7 @@ function App() {
     }, []);
 
     const handleLogout = () => {
-        signOut(auth).catch((error) => console.error("Erreur de d�connexion:", error));
+        signOut(auth).catch((error) => console.error("Erreur de déconnexion:", error));
     };
 
     if (loading) {
@@ -36,7 +36,8 @@ function App() {
 
     return (
         <NotificationProvider>
-            <div className="App">
+            {/* La classe change dynamiquement ici, c'est la clé */}
+            <div className={currentUserBureau ? "app-wrapper" : "login-wrapper"}>
                 {currentUserBureau ? (
                     <ManagementPage currentUser={currentUserBureau} onLogout={handleLogout} />
                 ) : (
