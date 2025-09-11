@@ -30,13 +30,11 @@ function RequestDetailsPopup({ demande, onClose, onUpdateStatus, isDEC1, current
     const generatePDF = () => {
         const doc = new jsPDF();
         let y = 15;
-
         doc.setFontSize(18);
         doc.text(`Récapitulatif : Demande N°${demande.referenceNumber}`, 105, y, { align: 'center' });
         y += 10;
         doc.line(14, y, 196, y);
         y += 12;
-
         doc.setFontSize(12);
         doc.setFont(undefined, 'bold');
         doc.text("Informations Générales", 14, y);
@@ -44,14 +42,17 @@ function RequestDetailsPopup({ demande, onClose, onUpdateStatus, isDEC1, current
         doc.setFont(undefined, 'normal');
         doc.text(`- Bureau Organisateur: ${demande.bureau}`, 16, y); y += 7;
         doc.text(`- Domaine: ${demande.domaine}`, 16, y); y += 7;
-        doc.text(`- Gestionnaire: ${demande.gestionnaire}`, 16, y); y += 12;
+        doc.text(`- Gestionnaire: ${demande.gestionnaire}`, 16, y); y += 7;
+        if (demande.numeroMission) { doc.text(`- N° de Mission: ${demande.numeroMission}`, 16, y); y += 7; }
+        if (demande.gestionnaireDEC1) { doc.text(`- Gestionnaire DEC1: ${demande.gestionnaireDEC1}`, 16, y); y += 7; }
+        y += 5;
 
         doc.setFont(undefined, 'bold');
         doc.text("Lieu de l'épreuve", 14, y);
         y += 7;
         doc.setFont(undefined, 'normal');
         doc.text(`- Centre: ${demande.libelleCentre} (${demande.codeCentre})`, 16, y); y += 7;
-        doc.text(`- Ville: ${demande.ville}`, 16, y); y += 12;
+        doc.text(`- Ville: ${demande.ville} (${demande.codePostal || 'N/A'})`, 16, y); y += 12;
 
         doc.setFontSize(14);
         doc.text("Détail des interventions", 14, y);
@@ -63,25 +64,19 @@ function RequestDetailsPopup({ demande, onClose, onUpdateStatus, isDEC1, current
             doc.setFont(undefined, 'bold');
             doc.text(`Groupe : ${intervenant.nombre} x ${intervenant.type}`, 16, y);
             y += 7;
-            
             doc.setFont(undefined, 'normal');
             doc.setFontSize(11);
-
             for (let i = 0; i < intervenant.nombre; i++) {
-                const nomRecrute = intervenantsRecrutes[recruitedIndex] || "(Poste non pourvu)";
+                const nomRecrute = (intervenantsRecrutes || [])[recruitedIndex] || "(Poste non pourvu)";
                 doc.text(`  • Intervenant recruté : ${nomRecrute}`, 18, y);
                 y += 6;
                 recruitedIndex++;
             }
-
             doc.setFont(undefined, 'italic');
             intervenant.dates?.forEach(dateInfo => {
                 const dateStr = new Date(dateInfo.date).toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' });
-                // MODIFICATION ICI : On construit le texte avec la condition
                 let scheduleText = `    Horaires : Le ${dateStr} de ${dateInfo.heureDebut} à ${dateInfo.heureFin}`;
-                if (dateInfo.pauseMeridienne) {
-                    scheduleText += " (avec pause méridienne)";
-                }
+                if (dateInfo.pauseMeridienne) { scheduleText += " (avec pause méridienne)"; }
                 doc.text(scheduleText, 20, y);
                 y += 6;
             });
@@ -94,7 +89,6 @@ function RequestDetailsPopup({ demande, onClose, onUpdateStatus, isDEC1, current
         doc.text("La Direction des Examens et Concours vous remercie de votre collaboration", 105, y, { align: 'center' });
         y += 6;
         doc.text("et vous souhaite d'excellentes conditions d'examen.", 105, y, { align: 'center' });
-
         doc.save(`recap_demande_${demande.referenceNumber}.pdf`);
     };
 
@@ -106,7 +100,8 @@ function RequestDetailsPopup({ demande, onClose, onUpdateStatus, isDEC1, current
     const handleSaveEdits = async () => {
         const demandeDocRef = doc(db, "demandes", demande.id);
         try {
-            await updateDoc(demandeDocRef, editedDemande);
+            const { domaine, specialite, epreuve, gestionnaire, codeCentre, libelleCentre, ville, codePostal, observations, intervenants } = editedDemande;
+            await updateDoc(demandeDocRef, { domaine, specialite, epreuve, gestionnaire, codeCentre, libelleCentre, ville, codePostal, observations, intervenants });
             alert("Modifications enregistrées !");
             setIsEditing(false);
         } catch (error) {
@@ -319,12 +314,15 @@ function RequestDetailsPopup({ demande, onClose, onUpdateStatus, isDEC1, current
                                 <div className="detail-item"><strong>Spécialité:</strong> {isEditing ? <input name="specialite" value={editedDemande.specialite} onChange={handleEditChange} /> : <span>{demande.specialite || '-'}</span>}</div>
                                 <div className="detail-item"><strong>Épreuve:</strong> {isEditing ? <input name="epreuve" value={editedDemande.epreuve} onChange={handleEditChange} /> : <span>{demande.epreuve || '-'}</span>}</div>
                                 <div className="detail-item"><strong>Gestionnaire:</strong> {isEditing ? <input name="gestionnaire" value={editedDemande.gestionnaire} onChange={handleEditChange} /> : <span>{demande.gestionnaire || '-'}</span>}</div>
+                                <div className="detail-item"><strong>N° Mission:</strong> <span>{demande.numeroMission || 'Non défini'}</span></div>
+                                <div className="detail-item"><strong>Gestionnaire DEC1:</strong> <span>{demande.gestionnaireDEC1 || 'Non défini'}</span></div>
                             </div>
                             <div className="detail-section">
                                 <h3><FaMapMarkerAlt /> Lieu de l'examen</h3>
                                 <div className="detail-item"><strong>Code centre:</strong> {isEditing ? <input name="codeCentre" value={editedDemande.codeCentre} onChange={handleEditChange} /> : <span>{demande.codeCentre || '-'}</span>}</div>
                                 <div className="detail-item"><strong>Libellé centre:</strong> {isEditing ? <input name="libelleCentre" value={editedDemande.libelleCentre} onChange={handleEditChange} /> : <span>{demande.libelleCentre || '-'}</span>}</div>
                                 <div className="detail-item"><strong>Ville:</strong> {isEditing ? <input name="ville" value={editedDemande.ville} onChange={handleEditChange} /> : <span>{demande.ville || '-'}</span>}</div>
+                                <div className="detail-item"><strong>Code Postal:</strong> {isEditing ? <input name="codePostal" value={editedDemande.codePostal} onChange={handleEditChange} /> : <span>{demande.codePostal || '-'}</span>}</div>
                             </div>
                             <div className="detail-section">
                                 <h3><FaFileAlt /> Observations</h3>

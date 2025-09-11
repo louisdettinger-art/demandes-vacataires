@@ -18,7 +18,6 @@ function RequestCard({ demande, onClick, priorityClass }) {
 
     const firstDate = getEarliestDate(demande);
 
-    // Fonction pour déterminer la classe CSS du statut
     const getStatusClass = (statut) => {
         switch (statut) {
             case 'En cours':
@@ -34,7 +33,6 @@ function RequestCard({ demande, onClick, priorityClass }) {
     };
 
     return (
-        // On combine la classe de base avec la classe de priorité reçue en prop
         <div className={`request-card ${priorityClass}`} onClick={onClick}>
             <div className="request-header">
                 <h4>{demande.titreComplet || 'Titre non spécifié'}</h4>
@@ -45,7 +43,10 @@ function RequestCard({ demande, onClick, priorityClass }) {
                 <p><strong>Échéance:</strong> {firstDate ? firstDate.toLocaleDateString('fr-FR') : 'Non spécifiée'}</p>
                 <p><strong>Intervenants:</strong> {totalIntervenants} ({intervenantsText})</p>
                 <p><strong>Ville:</strong> {demande.ville || 'Non spécifié'}</p>
-                <p><strong>Lieu:</strong> {demande.libelleCentre || 'Non spécifié'}</p>
+                
+                {/* MODIFICATION ICI : On affiche le libellé ET le code */}
+                <p><strong>Lieu:</strong> {demande.libelleCentre || 'N/A'} ({demande.codeCentre || 'N/A'})</p>
+                
                 <p><strong>Gestionnaire:</strong> {demande.gestionnaire || 'Non spécifié'}</p>
             </div>
         </div>

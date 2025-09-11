@@ -123,6 +123,7 @@ body, html, #root {
 .popup-content { background: white; border-radius: 15px; padding: 30px; width: 95%; max-width: 1000px; max-height: 95vh; overflow-y: auto; box-shadow: 0 20px 40px rgba(0,0,0,0.2); }
 .popup-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 2px solid #e9ecef; }
 .close-btn { background: none; border: none; font-size: 24px; color: #7f8c8d; cursor: pointer; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; }
+
 .form-group { margin-bottom: 20px; }
 .form-group label { display: block; margin-bottom: 8px; color: #2c3e50; font-weight: 500; font-size: 14px; }
 .form-group select, .form-group input, .form-group textarea { width: 100%; padding: 12px 15px; border: 2px solid #e0e6ed; border-radius: 8px; font-size: 16px; transition: all 0.3s ease; background: white; color: #2c3e50; }
@@ -131,8 +132,9 @@ body, html, #root {
 .form-group.remember-me label { margin-bottom: 0; }
 
 .form-section { border: 1px solid #e9ecef; border-radius: 10px; padding: 20px; margin-bottom: 25px; background-color: #f8f9fa; }
-.form-section h4 { color: #667eea; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid #e0e6ed; }
-.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 25px; margin-bottom: 20px; }
+.form-section h4 { color: #667eea; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px solid #e0e6ed; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 25px; }
+.form-row:not(:last-child) { margin-bottom: 20px; }
 .form-row.full-width { grid-template-columns: 1fr; }
 
 .submit-btn { width: 100%; background: #28a745; color: white; padding: 18px 40px; border: none; border-radius: 10px; font-size: 18px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; text-transform: uppercase; letter-spacing: 0.5px; }
@@ -140,11 +142,15 @@ body, html, #root {
 .submit-btn:not(:disabled):hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(40, 167, 69, 0.3); }
 
 .intervenant-group { border: 2px solid #cce5ff; border-radius: 8px; padding: 15px; margin-bottom: 15px; background: #f0f8ff; }
-.intervenant-row { display: grid; grid-template-columns: 2fr 1fr auto; gap: 15px; align-items: end; margin-bottom: 10px; }
-.date-row { display: grid; grid-template-columns: 2fr 1fr 1fr auto; gap: 10px; align-items: center; padding-left: 15px; margin-bottom: 10px; }
+.intervenant-row { display: grid; grid-template-columns: 2fr 1fr auto; gap: 15px; align-items: flex-end; margin-bottom: 10px; }
+.date-row { display: flex; gap: 10px; align-items: center; margin-bottom: 10px; flex-wrap: wrap; }
+.date-row .form-group { flex: 2; min-width: 120px; margin-bottom: 0; }
+.form-group.pause-checkbox { display: flex; align-items: center; gap: 5px; flex-shrink: 0; margin-bottom: 0; }
+.form-group.pause-checkbox label { white-space: nowrap; margin-bottom: 0; }
+.date-row .remove-btn { flex-shrink: 0; }
 .add-btn, .add-date-btn, .remove-btn { color: white; border: none; border-radius: 6px; padding: 8px 12px; cursor: pointer; font-size: 14px; }
-.add-btn { background: #17a2b8; margin-top: 10px; }
-.add-date-btn { background: #17a2b8; font-size: 12px; }
+.add-btn { background: #28a745; margin-top: 10px; }
+.add-date-btn { background: #17a2b8; }
 .remove-btn { background: #dc3545; }
 
 
@@ -153,10 +159,10 @@ body, html, #root {
 /* ========================================================================== */
 .request-details-popup .popup-header { position: relative; }
 .request-details-popup .header-actions { position: absolute; right: 60px; top: 50%; transform: translateY(-50%); display: flex; gap: 10px; align-items: center; }
-.request-details-popup .detail-section h3 { color: #667eea; }
+.request-details-popup .detail-section h3 { color: #667eea; font-size: 18px; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid #dee2e6; display: flex; align-items: center; gap: 10px; }
 .request-details-popup .detail-item { display: flex; margin-bottom: 12px; font-size: 15px; line-height: 1.6; align-items: center; }
 .request-details-popup .detail-item strong { font-weight: 600; color: #495057; width: 150px; flex-shrink: 0; }
-.request-details-popup .detail-item input, .request-details-popup .detail-item textarea { font-size: 14px; padding: 8px; }
+.request-details-popup .detail-item input, .request-details-popup .detail-item textarea { font-size: 14px; padding: 8px; border: 1px solid #ccc; border-radius: 4px; flex-grow: 1; }
 
 .intervenant-group-details { margin-bottom: 15px; }
 .intervenant-item { background: #e9ecef; padding: 8px 15px; border-radius: 6px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; font-size: 15px; }
@@ -186,6 +192,18 @@ body, html, #root {
 .edit-btn { background-color: #ffc107; color: #212529; padding: 8px 15px; border: none; border-radius: 6px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; display: flex; align-items: center; gap: 8px; }
 .edit-btn:hover { background-color: #e0a800; }
 
+.pdf-btn { background-color: #17a2b8; color: white; padding: 8px 15px; border: none; border-radius: 6px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; display: flex; align-items: center; gap: 8px; }
+.pdf-btn:hover { background-color: #138496; }
+
+.status-buttons { display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap; }
+.status-btn { padding: 10px 15px; border: 2px solid transparent; border-radius: 8px; font-weight: 600; cursor: pointer; color: white; transition: all 0.3s ease; opacity: 0.8; font-size: 14px; flex-grow: 1; text-align: center; }
+.status-btn:hover { opacity: 1; transform: translateY(-2px); box-shadow: 0 5px 10px rgba(0,0,0,0.1); }
+.status-btn.active { opacity: 1; box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.5), 0 5px 10px rgba(0,0,0,0.1); transform: translateY(-1px); border-color: rgba(255,255,255,0.7); }
+.status-btn.en-attente { background-color: #ffc107; color: #343a40; }
+.status-btn.en-cours { background-color: #17a2b8; }
+.status-btn.terminee { background-color: #28a745; }
+.status-btn.annulee { background-color: #dc3545; }
+
 /* ========================================================================== */
 /* ==                         7. STYLES NOTIFICATIONS                        == */
 /* ========================================================================== */
@@ -202,3 +220,33 @@ body, html, #root {
 .notification-footer { padding: 10px; text-align: center; border-top: 1px solid #f0f2f5; background-color: #f8f9fa; flex-shrink: 0; }
 .clear-notifications-btn { background: transparent; border: 1px solid #dc3545; color: #dc3545; padding: 8px 15px; border-radius: 6px; font-size: 12px; font-weight: 500; cursor: pointer; transition: all 0.2s ease; }
 .clear-notifications-btn:hover { background-color: #dc3545; color: white; }
+
+/* ========================================================================== */
+/* ==                 STYLES POUR AUTOCOMPLETION                             == */
+/* ========================================================================== */
+.autocomplete-container { position: relative; }
+.suggestions-list { position: absolute; top: 100%; left: 0; right: 0; background-color: white; border: 1px solid #dee2e6; border-top: none; border-radius: 0 0 8px 8px; list-style: none; padding: 0; margin: 0; max-height: 200px; overflow-y: auto; z-index: 10; box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
+.suggestions-list li { padding: 12px 15px; cursor: pointer; font-size: 14px; }
+.suggestions-list li:hover { background-color: #f8f9fa; }
+/* ========================================================================== */
+/* ==               CORRECTION SPÉCIFIQUE PAUSE MÉRIDIENNE                 == */
+/* ========================================================================== */
+.date-row .form-group.pause-checkbox {
+    display: flex;
+    align-items: center; /* Centre verticalement */
+    gap: 5px; /* Espace entre la checkbox et le label */
+    margin-bottom: 0;
+    flex-shrink: 0; /* Empêche le rétrécissement sur les petits écrans */
+    min-width: unset; /* Annule le min-width précédent si défini pour les inputs */
+    flex-basis: auto; /* Permet au conteneur de prendre juste l'espace nécessaire */
+}
+
+.date-row .form-group.pause-checkbox input[type="checkbox"] {
+    width: auto; /* La case ne prend pas toute la largeur */
+    margin-top: 2px; /* Ajustement fin pour l'alignement visuel */
+}
+
+.date-row .form-group.pause-checkbox label {
+    margin-bottom: 0; /* Supprime la marge sous le label */
+    white-space: nowrap; /* Empêche le texte de se casser sur plusieurs lignes */
+}

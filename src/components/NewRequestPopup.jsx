@@ -1,33 +1,58 @@
 import React, { useState } from 'react';
+import etablissementsData from '../etablissements.json';
 
 function NewRequestPopup({ currentUser, onClose, onSubmit }) {
     const [demande, setDemande] = useState({
         bureau: currentUser,
-        domaine: '',
-        specialite: '',
-        epreuve: '',
-        gestionnaire: '',
+        domaine: '', specialite: '', epreuve: '', gestionnaire: '',
         intervenants: [{ type: '', nombre: 1, dates: [{ date: '', heureDebut: '', heureFin: '', pauseMeridienne: false }] }],
-        codeCentre: '',
-        libelleCentre: '',
-        ville: '',
+        codeCentre: '', libelleCentre: '', ville: '', codePostal: '',
         observations: ''
     });
 
-    const isFormValid = () => {
-        const requiredFields = ['domaine', 'gestionnaire', 'codeCentre', 'libelleCentre', 'ville'];
-        const isMainFormValid = requiredFields.every(field => demande[field] && demande[field].trim() !== '');
+    const [suggestions, setSuggestions] = useState([]);
+    const [isSuggestionsOpen, setIsSuggestionsOpen] = useState(false);
 
+    const isFormValid = () => {
+        const requiredFields = ['domaine', 'gestionnaire', 'codeCentre', 'libelleCentre', 'ville', 'codePostal'];
+        const isMainFormValid = requiredFields.every(field => demande[field] && String(demande[field]).trim() !== '');
         const hasValidIntervenants = demande.intervenants.some(intervenant =>
             intervenant.type && intervenant.nombre > 0 && intervenant.dates.some(date => date.date && date.heureDebut && date.heureFin)
         );
-
         return isMainFormValid && hasValidIntervenants;
     };
 
     const handleChange = (e) => {
         const { id, value } = e.target;
-        setDemande(prevDemande => ({ ...prevDemande, [id]: value }));
+        setDemande(prev => ({ ...prev, [id]: value }));
+    };
+
+    const handleCodeCentreChange = (e) => {
+        const value = e.target.value;
+        setDemande(prev => ({ ...prev, codeCentre: value, libelleCentre: '', ville: '', codePostal: '' }));
+
+        if (value.length > 2) {
+            const filtered = etablissementsData.filter(etab => 
+                etab.code && etab.code.toLowerCase().startsWith(value.toLowerCase())
+            );
+            setSuggestions(filtered.slice(0, 5));
+            setIsSuggestionsOpen(true);
+        } else {
+            setSuggestions([]);
+            setIsSuggestionsOpen(false);
+        }
+    };
+
+    const handleSuggestionClick = (etablissement) => {
+        setDemande(prev => ({
+            ...prev,
+            codeCentre: etablissement.code,
+            libelleCentre: etablissement.libelle,
+            ville: etablissement.ville,
+            codePostal: etablissement.codePostal || ''
+        }));
+        setIsSuggestionsOpen(false);
+        setSuggestions([]);
     };
 
     const handleIntervenantChange = (e, index) => {
@@ -61,8 +86,7 @@ function NewRequestPopup({ currentUser, onClose, onSubmit }) {
 
     const addDate = (intervenantIndex) => {
         const newIntervenants = [...demande.intervenants];
-        const newDates = [...newIntervenants[intervenantIndex].dates, { date: '', heureDebut: '', heureFin: '', pauseMeridienne: false }];
-        newIntervenants[intervenantIndex].dates = newDates;
+        newIntervenants[intervenantIndex].dates.push({ date: '', heureDebut: '', heureFin: '', pauseMeridienne: false });
         setDemande(prevDemande => ({ ...prevDemande, intervenants: newIntervenants }));
     };
 
@@ -77,17 +101,16 @@ function NewRequestPopup({ currentUser, onClose, onSubmit }) {
     const handleSubmit = (e) => {
         e.preventDefault();
         onSubmit(demande);
-        onClose();
     };
 
     return (
-        <div className="popup-overlay" style={{ display: 'flex' }}>
+        <div className="popup-overlay">
             <div className="popup-content">
                 <div className="popup-header">
                     <h2>Nouvelle demande d'intervenant</h2>
                     <button className="close-btn" onClick={onClose}>&times;</button>
                 </div>
-                <form onSubmit={handleSubmit}>
+                <form onSubmit={handleSubmit} autoComplete="off">
                     <section className="form-section">
                         <h4>Informations générales</h4>
                         <div className="form-row">
@@ -100,7 +123,6 @@ function NewRequestPopup({ currentUser, onClose, onSubmit }) {
                                 <input type="text" id="domaine" name="domaine" value={demande.domaine} onChange={handleChange} required />
                             </div>
                         </div>
-                        
                         <div className="form-row">
                             <div className="form-group">
                                 <label>Spécialité</label>
@@ -122,19 +144,39 @@ function NewRequestPopup({ currentUser, onClose, onSubmit }) {
                     <section className="form-section">
                         <h4>Lieu de l'examen</h4>
                         <div className="form-row">
-                            <div className="form-group">
+                            <div className="form-group autocomplete-container">
                                 <label>Code centre <span className="required">*</span></label>
-                                <input type="text" id="codeCentre" name="codeCentre" value={demande.codeCentre} onChange={handleChange} required />
+                                <input 
+                                    type="text" 
+                                    id="codeCentre" 
+                                    name="codeCentre" 
+                                    value={demande.codeCentre} 
+                                    onChange={handleCodeCentreChange} 
+                                    required 
+                                />
+                                {isSuggestionsOpen && suggestions.length > 0 && (
+                                    <ul className="suggestions-list">
+                                        {suggestions.map((etab) => (
+                                            <li key={etab.code} onClick={() => handleSuggestionClick(etab)}>
+                                                <strong>{etab.code}</strong> - {etab.libelle}, {etab.ville}
+                                            </li>
+                                        ))}
+                                    </ul>
+                                )}
                             </div>
                             <div className="form-group">
                                 <label>Libellé centre <span className="required">*</span></label>
-                                <input type="text" id="libelleCentre" name="libelleCentre" value={demande.libelleCentre} onChange={handleChange} required />
+                                <input type="text" id="libelleCentre" name="libelleCentre" value={demande.libelleCentre} onChange={handleChange} required readOnly style={{ background: '#f8f9fa' }}/>
                             </div>
                         </div>
-                        <div className="form-row full-width">
+                        <div className="form-row">
                             <div className="form-group">
                                 <label>Ville <span className="required">*</span></label>
-                                <input type="text" id="ville" name="ville" value={demande.ville} onChange={handleChange} required />
+                                <input type="text" id="ville" name="ville" value={demande.ville} onChange={handleChange} required readOnly style={{ background: '#f8f9fa' }}/>
+                            </div>
+                            <div className="form-group">
+                                <label>Code Postal <span className="required">*</span></label>
+                                <input type="text" id="codePostal" name="codePostal" value={demande.codePostal} onChange={handleChange} required />
                             </div>
                         </div>
                     </section>
@@ -147,13 +189,7 @@ function NewRequestPopup({ currentUser, onClose, onSubmit }) {
                                     <div className="intervenant-row">
                                         <div className="form-group">
                                             <label>Type d'intervenant</label>
-                                            <select
-                                                className="intervenant-type"
-                                                name="type"
-                                                value={intervenant.type}
-                                                onChange={(e) => handleIntervenantChange(e, intervenantIndex)}
-                                                required
-                                            >
+                                            <select name="type" value={intervenant.type} onChange={(e) => handleIntervenantChange(e, intervenantIndex)} required >
                                                 <option value="">Sélectionner un type</option>
                                                 <option value="Surveillant">Surveillant</option>
                                                 <option value="Surveillant + mise en loge">Surveillant + mise en loge</option>
@@ -168,16 +204,7 @@ function NewRequestPopup({ currentUser, onClose, onSubmit }) {
                                         </div>
                                         <div className="form-group">
                                             <label>Nombre</label>
-                                            <input
-                                                type="number"
-                                                className="intervenant-nombre"
-                                                name="nombre"
-                                                placeholder="Nombre"
-                                                min="1"
-                                                value={intervenant.nombre}
-                                                onChange={(e) => handleIntervenantChange(e, intervenantIndex)}
-                                                required
-                                            />
+                                            <input type="number" name="nombre" placeholder="Nombre" min="1" value={intervenant.nombre} onChange={(e) => handleIntervenantChange(e, intervenantIndex)} required />
                                         </div>
                                         {demande.intervenants.length > 1 && (
                                             <button type="button" className="remove-btn" onClick={() => removeIntervenant(intervenantIndex)}>
@@ -187,71 +214,39 @@ function NewRequestPopup({ currentUser, onClose, onSubmit }) {
                                     </div>
                                     <div className="dates-intervenant">
                                         <h5 style={{ margin: '15px 0 10px 0', color: '#495057', fontSize: '14px' }}>Dates et horaires :</h5>
-                                        <div className="dates-container-intervenant">
-                                            {intervenant.dates.map((date, dateIndex) => (
-                                                <div className="date-group" key={dateIndex}>
-                                                    <div className="date-row">
-                                                        <div className="form-group">
-                                                            <label>Date</label>
-                                                            <input
-                                                                type="date"
-                                                                className="date-field"
-                                                                name="date"
-                                                                value={date.date}
-                                                                onChange={(e) => handleDateChange(e, intervenantIndex, dateIndex)}
-                                                                required
-                                                            />
-                                                        </div>
-                                                        <div className="form-group">
-                                                            <label>Heure début</label>
-                                                            <input
-                                                                type="time"
-                                                                className="time-start"
-                                                                name="heureDebut"
-                                                                value={date.heureDebut}
-                                                                onChange={(e) => handleDateChange(e, intervenantIndex, dateIndex)}
-                                                                required
-                                                            />
-                                                        </div>
-                                                        <div className="form-group">
-                                                            <label>Heure fin</label>
-                                                            <input
-                                                                type="time"
-                                                                className="time-end"
-                                                                name="heureFin"
-                                                                value={date.heureFin}
-                                                                onChange={(e) => handleDateChange(e, intervenantIndex, dateIndex)}
-                                                                required
-                                                            />
-                                                        </div>
-                                                        <div className="form-group pause-checkbox">
-                                                            <input
-                                                                type="checkbox"
-                                                                className="pause-meridienne"
-                                                                name="pauseMeridienne"
-                                                                checked={date.pauseMeridienne}
-                                                                onChange={(e) => handleDateChange(e, intervenantIndex, dateIndex)}
-                                                                id={`pause-${intervenantIndex}-${dateIndex}`}
-                                                            />
-                                                            <label htmlFor={`pause-${intervenantIndex}-${dateIndex}`}>Pause méridienne</label>
-                                                        </div>
-                                                        {intervenant.dates.length > 1 && (
-                                                            <button type="button" className="remove-date-btn" onClick={() => removeDate(intervenantIndex, dateIndex)}>
-                                                                Supprimer
-                                                            </button>
-                                                        )}
-                                                    </div>
+                                        {intervenant.dates.map((date, dateIndex) => (
+                                            <div className="date-row" key={dateIndex}>
+                                                <div className="form-group">
+                                                    <label>Date</label>
+                                                    <input type="date" name="date" value={date.date} onChange={(e) => handleDateChange(e, intervenantIndex, dateIndex)} required />
                                                 </div>
-                                            ))}
-                                        </div>
+                                                <div className="form-group">
+                                                    <label>Heure début</label>
+                                                    <input type="time" name="heureDebut" value={date.heureDebut} onChange={(e) => handleDateChange(e, intervenantIndex, dateIndex)} required />
+                                                </div>
+                                                <div className="form-group">
+                                                    <label>Heure fin</label>
+                                                    <input type="time" name="heureFin" value={date.heureFin} onChange={(e) => handleDateChange(e, intervenantIndex, dateIndex)} required />
+                                                </div>
+                                                <div className="form-group pause-checkbox">
+                                                    <input type="checkbox" name="pauseMeridienne" checked={date.pauseMeridienne} onChange={(e) => handleDateChange(e, intervenantIndex, dateIndex)} id={`pause-${intervenantIndex}-${dateIndex}`} />
+                                                    <label htmlFor={`pause-${intervenantIndex}-${dateIndex}`}>Pause méridienne</label> {/* Correction ici */}
+                                                </div>
+                                                {intervenant.dates.length > 1 && (
+                                                    <button type="button" className="remove-btn" onClick={() => removeDate(intervenantIndex, dateIndex)}>
+                                                        X
+                                                    </button>
+                                                )}
+                                            </div>
+                                        ))}
                                         <button type="button" className="add-date-btn" onClick={() => addDate(intervenantIndex)}>
-                                            + Ajouter une autre date
+                                            + Ajouter une date
                                         </button>
                                     </div>
                                 </div>
                             ))}
                         </div>
-                        <button type="button" className="add-btn" onClick={addIntervenant}>+ Ajouter un autre type d'intervenant</button>
+                        <button type="button" className="add-btn" onClick={addIntervenant}>+ Ajouter un type d'intervenant</button>
                     </section>
 
                     <section className="form-section">

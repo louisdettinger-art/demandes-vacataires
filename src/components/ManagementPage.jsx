@@ -1,5 +1,3 @@
-// src/components/ManagementPage.jsx
-
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { db, auth } from '../firebase';
 import { collection, addDoc, onSnapshot, doc, updateDoc, deleteDoc } from "firebase/firestore"; 
@@ -227,8 +225,8 @@ function ManagementPage({ currentUser, onLogout }) {
                 </div>
             </div>
             <div className="management-content">
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-                    <div>
+                <div className="actions-bar">
+                    <div className="main-actions">
                         <button className="new-request-btn" onClick={handleOpenPopup}>+ Nouvelle demande</button>
                         <button className="search-request-btn" onClick={handleOpenSearchPopup}>Rechercher une demande</button>
                     </div>
