@@ -1,22 +1,25 @@
 import React, { useState, useEffect } from 'react';
 import DemandeStatus from './DemandeStatus';
 import AnnulationPopup from './AnnulationPopup';
-import { FaInfoCircle, FaMapMarkerAlt, FaUsers, FaCalendarAlt, FaFileAlt, FaClipboardList, FaUserCheck } from 'react-icons/fa';
+import { FaInfoCircle, FaMapMarkerAlt, FaUsers, FaClipboardList, FaUserCheck, FaFileAlt, FaEdit, FaSave, FaFilePdf } from 'react-icons/fa';
+import { db } from '../firebase';
+import { doc, updateDoc } from 'firebase/firestore';
+import jsPDF from 'jspdf';
 
-function RequestDetailsPopup({ demande, onClose, onUpdateStatus, isDEC1, currentUser }) {
+function RequestDetailsPopup({ demande, onClose, onUpdateStatus, isDEC1, currentUser, onDelete }) {
     if (!demande) return null;
 
-    // États locaux pour gérer les modifications dans le formulaire
+    const [isEditing, setIsEditing] = useState(false);
+    const [editedDemande, setEditedDemande] = useState(demande);
     const [intervenantsRecrutes, setIntervenantsRecrutes] = useState([]);
     const [numeroMission, setNumeroMission] = useState('');
     const [statut, setStatut] = useState('');
     const [gestionnaireDEC1, setGestionnaireDEC1] = useState('');
     const [isAnnulationPopupOpen, setIsAnnulationPopupOpen] = useState(false);
 
-    // BUG CORRIGÉ : Ce useEffect synchronise l'état du popup avec les données
-    // qui peuvent changer en temps réel (si un autre utilisateur modifie la demande).
     useEffect(() => {
         if (demande) {
+            setEditedDemande(demande);
             setIntervenantsRecrutes(demande.intervenantsRecrutes || []);
             setNumeroMission(demande.numeroMission || '');
             setStatut(demande.statut || 'En attente');
@@ -24,106 +27,298 @@ function RequestDetailsPopup({ demande, onClose, onUpdateStatus, isDEC1, current
         }
     }, [demande]);
 
+    const generatePDF = () => {
+        const doc = new jsPDF();
+        let y = 15;
+
+        doc.setFontSize(18);
+        doc.text(`Récapitulatif : Demande N°${demande.referenceNumber}`, 105, y, { align: 'center' });
+        y += 10;
+        doc.line(14, y, 196, y);
+        y += 12;
+
+        doc.setFontSize(12);
+        doc.setFont(undefined, 'bold');
+        doc.text("Informations Générales", 14, y);
+        y += 7;
+        doc.setFont(undefined, 'normal');
+        doc.text(`- Bureau Organisateur: ${demande.bureau}`, 16, y);
+        y += 7;
+        doc.text(`- Domaine: ${demande.domaine}`, 16, y);
+        y += 7;
+        doc.text(`- Gestionnaire: ${demande.gestionnaire}`, 16, y);
+        y += 12;
+
+        doc.setFontSize(12);
+        doc.setFont(undefined, 'bold');
+        doc.text("Lieu de l'épreuve", 14, y);
+        y += 7;
+        doc.setFont(undefined, 'normal');
+        doc.text(`- Centre: ${demande.libelleCentre} (${demande.codeCentre})`, 16, y);
+        y += 7;
+        doc.text(`- Ville: ${demande.ville}`, 16, y);
+        y += 12;
+
+        doc.setFontSize(12);
+        doc.setFont(undefined, 'bold');
+        doc.text("Intervenants requis et horaires", 14, y);
+        y += 7;
+        doc.setFont(undefined, 'normal');
+        demande.intervenants?.forEach(intervenant => {
+            doc.text(`- ${intervenant.nombre} x ${intervenant.type}`, 16, y);
+            y += 6;
+            intervenant.dates?.forEach(dateInfo => {
+                const dateStr = new Date(dateInfo.date).toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' });
+                doc.text(`  Le ${dateStr} de ${dateInfo.heureDebut} à ${dateInfo.heureFin}`, 20, y);
+                y += 6;
+            });
+        });
+        y += 6;
+
+        doc.setFontSize(12);
+        doc.setFont(undefined, 'bold');
+        doc.text("Intervenants recrutés", 14, y);
+        y += 7;
+        doc.setFont(undefined, 'normal');
+        const recruited = intervenantsRecrutes.filter(name => name && name.trim() !== '');
+        if (recruited.length > 0) {
+            recruited.forEach(intervenant => {
+                doc.text(`- ${intervenant}`, 16, y);
+                y += 7;
+            });
+        } else {
+            doc.text("Aucun intervenant recruté pour le moment.", 16, y);
+            y += 7;
+        }
+        
+        y = 270;
+        doc.setFontSize(10);
+        doc.setFont(undefined, 'italic');
+        doc.text("La Direction des Examens et Concours vous remercie de votre collaboration", 105, y, { align: 'center' });
+        y += 5;
+        doc.text("et vous souhaite d'excellentes conditions d'examen.", 105, y, { align: 'center' });
+
+        doc.save(`recap_demande_${demande.referenceNumber}.pdf`);
+    };
+
+    const handleEditChange = (e) => {
+        const { name, value } = e.target;
+        setEditedDemande(prev => ({ ...prev, [name]: value }));
+    };
+
+    const handleSaveEdits = async () => {
+        const demandeDocRef = doc(db, "demandes", demande.id);
+        try {
+            await updateDoc(demandeDocRef, editedDemande);
+            alert("Modifications enregistrées !");
+            setIsEditing(false);
+        } catch (error) {
+            console.error("Erreur:", error);
+            alert("La sauvegarde a échoué.");
+        }
+    };
+
+    const handleIntervenantEditChange = (e, index) => {
+        const { name, value } = e.target;
+        const newIntervenants = [...editedDemande.intervenants];
+        newIntervenants[index] = { ...newIntervenants[index], [name]: value };
+        setEditedDemande(prev => ({ ...prev, intervenants: newIntervenants }));
+    };
+
+    const handleDateEditChange = (e, intervenantIndex, dateIndex) => {
+        const { name, value, type, checked } = e.target;
+        const newIntervenants = [...editedDemande.intervenants];
+        const newDates = [...newIntervenants[intervenantIndex].dates];
+        newDates[dateIndex] = { ...newDates[dateIndex], [name]: type === 'checkbox' ? checked : value };
+        newIntervenants[intervenantIndex].dates = newDates;
+        setEditedDemande(prev => ({ ...prev, intervenants: newIntervenants }));
+    };
+
+    const addIntervenant = () => {
+        setEditedDemande(prev => ({
+            ...prev,
+            intervenants: [...(prev.intervenants || []), { type: '', nombre: 1, dates: [{ date: '', heureDebut: '', heureFin: '', pauseMeridienne: false }] }]
+        }));
+    };
+
+    const removeIntervenant = (index) => {
+        const newIntervenants = [...editedDemande.intervenants];
+        newIntervenants.splice(index, 1);
+        setEditedDemande(prev => ({ ...prev, intervenants: newIntervenants }));
+    };
+
+    const addDate = (intervenantIndex) => {
+        const newIntervenants = [...editedDemande.intervenants];
+        newIntervenants[intervenantIndex].dates.push({ date: '', heureDebut: '', heureFin: '', pauseMeridienne: false });
+        setEditedDemande(prev => ({ ...prev, intervenants: newIntervenants }));
+    };
+
+    const removeDate = (intervenantIndex, dateIndex) => {
+        const newIntervenants = [...editedDemande.intervenants];
+        newIntervenants[intervenantIndex].dates.splice(dateIndex, 1);
+        setEditedDemande(prev => ({ ...prev, intervenants: newIntervenants }));
+    };
 
     const totalIntervenantsRequis = demande.intervenants?.reduce((total, int) => total + (parseInt(int.nombre, 10) || 0), 0) ?? 0;
     const totalIntervenantsRecrutes = intervenantsRecrutes.filter(name => name && name.trim() !== '').length;
-
+    
     const handleIntervenantRecruteChange = (index, value) => {
         const newIntervenantsRecrutes = [...intervenantsRecrutes];
         newIntervenantsRecrutes[index] = value;
         setIntervenantsRecrutes(newIntervenantsRecrutes);
     };
-
+    
     const handleNumeroMissionChange = (e) => setNumeroMission(e.target.value);
     const handleGestionnaireDEC1Change = (e) => setGestionnaireDEC1(e.target.value);
     const handleStatutChange = (newStatut) => setStatut(newStatut);
     const handleAnnulerClick = () => setIsAnnulationPopupOpen(true);
-
+    
     const handleAnnulationConfirm = (motif, gestionnaireAnnulation) => {
-        onUpdateStatus(demande.id, 'Annulée', {
-            intervenantsRecrutes: [],
-            numeroMission: '',
-            gestionnaireDEC1: gestionnaireAnnulation,
-            motifAnnulation: motif
-        });
+        onUpdateStatus(demande.id, 'Annulée', { intervenantsRecrutes: [], numeroMission: '', gestionnaireDEC1: gestionnaireAnnulation, motifAnnulation: motif });
         setIsAnnulationPopupOpen(false);
         onClose();
     };
-
+    
     const handleSaveChanges = () => {
-        onUpdateStatus(demande.id, statut, {
-            intervenantsRecrutes,
-            numeroMission,
-            gestionnaireDEC1
-        });
+        onUpdateStatus(demande.id, statut, { intervenantsRecrutes, numeroMission, gestionnaireDEC1 });
         onClose();
     };
 
+    const getIntervenantsAndDatesList = () => {
+        return demande.intervenants?.map((intervenant, index) => (
+            <div key={index} className="intervenant-group-details">
+                <div className="intervenant-item">
+                    <span>{`Groupe ${index + 1}: ${intervenant.type}`}</span>
+                    <strong>{intervenant.nombre}</strong>
+                </div>
+                <div className="dates-section">
+                    {intervenant.dates?.map((dateInfo, i) => (
+                        <div key={i} className="date-item">
+                            <div>{new Date(dateInfo.date).toLocaleDateString('fr-FR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</div>
+                            <div className="date-time">
+                                <span>{dateInfo.heureDebut || '--:--'} → {dateInfo.heureFin || '--:--'}</span>
+                                {dateInfo.pauseMeridienne && <div className="pause-indicator">Pause méridienne</div>}
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        ));
+    };
+
     const renderIntervenantInputs = () => {
-        let intervenantIndex = 0;
+        let globalIntervenantIndex = 0;
         return demande.intervenants?.map((group, groupIndex) => {
-            const inputs = [];
+            const groupInputs = [];
             for (let i = 0; i < group.nombre; i++) {
-                const currentIndex = intervenantIndex++;
-                inputs.push(
-                    <div key={currentIndex} className="form-group intervenant-recrute">
-                        <label>{`Intervenant ${currentIndex + 1} (${group.type})`}</label>
-                        <input
-                            type="text"
-                            placeholder="Nom et Prénom de l'intervenant"
-                            value={intervenantsRecrutes[currentIndex] || ''}
-                            onChange={(e) => handleIntervenantRecruteChange(currentIndex, e.target.value)}
-                        />
+                const currentIndexInState = globalIntervenantIndex++;
+                const localIndexInGroup = i + 1;
+                groupInputs.push(
+                    <div key={currentIndexInState} className="form-group intervenant-recrute">
+                        <label>{`Nom de l'intervenant ${localIndexInGroup}`}</label>
+                        <input type="text" placeholder="Nom et Prénom" value={intervenantsRecrutes[currentIndexInState] || ''} onChange={(e) => handleIntervenantRecruteChange(currentIndexInState, e.target.value)} />
                     </div>
                 );
             }
-            return <div key={groupIndex}>{inputs}</div>;
+            return (
+                <div key={groupIndex} className="recruitment-group">
+                    <h4>{`Groupe : ${group.type}`}</h4>
+                    {groupInputs}
+                </div>
+            );
         });
     };
+
+    const renderEditableIntervenants = () => (
+        <>
+            {editedDemande.intervenants?.map((intervenant, intervenantIndex) => (
+                <div className="intervenant-group" key={intervenantIndex}>
+                    <div className="intervenant-row">
+                        <div className="form-group">
+                            <label>Type</label>
+                            <select name="type" value={intervenant.type} onChange={(e) => handleIntervenantEditChange(e, intervenantIndex)} required>
+                                <option value="">Sélectionner</option>
+                                <option value="Surveillant">Surveillant</option>
+                                <option value="Surveillant + mise en loge">Surveillant + mise en loge</option>
+                                <option value="Secrétaire scripteur">Secrétaire scripteur</option>
+                                <option value="Secrétaire lecteur">Secrétaire lecteur</option>
+                                <option value="Responsable de bloc">Responsable de bloc</option>
+                                <option value="Responsable de salle">Responsable de salle</option>
+                                <option value="Travaux publics">Travaux publics</option>
+                                <option value="Adjoint au chef de centre">Adjoint au chef de centre</option>
+                                <option value="Chef de centre">Chef de centre</option>
+                            </select>
+                        </div>
+                        <div className="form-group">
+                            <label>Nombre</label>
+                            <input type="number" name="nombre" min="1" value={intervenant.nombre} onChange={(e) => handleIntervenantEditChange(e, intervenantIndex)} required />
+                        </div>
+                        <button type="button" className="remove-btn" onClick={() => removeIntervenant(intervenantIndex)}>X</button>
+                    </div>
+                    {intervenant.dates.map((date, dateIndex) => (
+                        <div className="date-row" key={dateIndex}>
+                            <input type="date" name="date" value={date.date} onChange={(e) => handleDateEditChange(e, intervenantIndex, dateIndex)} required />
+                            <input type="time" name="heureDebut" value={date.heureDebut} onChange={(e) => handleDateEditChange(e, intervenantIndex, dateIndex)} required />
+                            <input type="time" name="heureFin" value={date.heureFin} onChange={(e) => handleDateEditChange(e, intervenantIndex, dateIndex)} required />
+                            <button type="button" className="remove-btn" onClick={() => removeDate(intervenantIndex, dateIndex)}>X</button>
+                        </div>
+                    ))}
+                    <button type="button" className="add-date-btn" onClick={() => addDate(intervenantIndex)}>+ Ajouter date</button>
+                </div>
+            ))}
+            <button type="button" className="add-btn" onClick={addIntervenant}>+ Ajouter un groupe d'intervenants</button>
+        </>
+    );
 
     const isMissionAnnulee = statut === 'Annulée';
 
     return (
         <>
-            {/* On ajoute la classe "request-details-popup" pour appliquer les bons styles */}
             <div className="popup-overlay request-details-popup" onClick={onClose}>
                 <div className="popup-content" onClick={(e) => e.stopPropagation()}>
                     <div className="popup-header">
                         <h2>Détails de la demande</h2>
-                        <button className="close-btn" onClick={onClose}>&times;</button>
+                        <div className="header-actions">
+                            {demande.statut === 'Terminée' && (
+                                <button className="pdf-btn" onClick={generatePDF}><FaFilePdf /> Récap PDF</button>
+                            )}
+                            {isDEC1 && !isMissionAnnulee && (
+                                <div className="edit-actions">
+                                    {isEditing ? (
+                                        <>
+                                            <button className="save-changes-btn" onClick={handleSaveEdits}><FaSave /> Enregistrer</button>
+                                            <button className="annuler-btn" onClick={() => { setIsEditing(false); setEditedDemande(demande); }}>Annuler</button>
+                                        </>
+                                    ) : (
+                                        <button className="edit-btn" onClick={() => setIsEditing(true)}><FaEdit /> Modifier la demande</button>
+                                    )}
+                                </div>
+                            )}
+                            <button className="close-btn" onClick={onClose}>&times;</button>
+                        </div>
                     </div>
                     
-                    {/* NOUVELLE STRUCTURE VISUELLE */}
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))', gap: '20px' }}>
-                        
-                        {/* COLONNE DE GAUCHE */}
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
                         <div>
                             <div className="detail-section">
                                 <h3><FaInfoCircle /> Informations Générales</h3>
-                                <div className="detail-grid">
-                                    <div className="detail-item"><strong>N° Référence :</strong> <span>{demande.referenceNumber || '-'}</span></div>
-                                    <div className="detail-item"><strong>Bureau :</strong> <span>{demande.bureau || '-'}</span></div>
-                                    <div className="detail-item"><strong>Domaine :</strong> <span>{demande.domaine || '-'}</span></div>
-                                    <div className="detail-item"><strong>Spécialité :</strong> <span>{demande.specialite || '-'}</span></div>
-                                    <div className="detail-item"><strong>Épreuve :</strong> <span>{demande.epreuve || '-'}</span></div>
-                                    <div className="detail-item"><strong>Gestionnaire :</strong> <span>{demande.gestionnaire || '-'}</span></div>
-                                </div>
+                                <div className="detail-item"><strong>N° Référence:</strong> <span>{demande.referenceNumber || '-'}</span></div>
+                                <div className="detail-item"><strong>Bureau:</strong> <span>{demande.bureau || '-'}</span></div>
+                                <div className="detail-item"><strong>Domaine:</strong> {isEditing ? <input name="domaine" value={editedDemande.domaine} onChange={handleEditChange} /> : <span>{demande.domaine || '-'}</span>}</div>
+                                <div className="detail-item"><strong>Spécialité:</strong> {isEditing ? <input name="specialite" value={editedDemande.specialite} onChange={handleEditChange} /> : <span>{demande.specialite || '-'}</span>}</div>
+                                <div className="detail-item"><strong>Épreuve:</strong> {isEditing ? <input name="epreuve" value={editedDemande.epreuve} onChange={handleEditChange} /> : <span>{demande.epreuve || '-'}</span>}</div>
+                                <div className="detail-item"><strong>Gestionnaire:</strong> {isEditing ? <input name="gestionnaire" value={editedDemande.gestionnaire} onChange={handleEditChange} /> : <span>{demande.gestionnaire || '-'}</span>}</div>
                             </div>
-
                             <div className="detail-section">
                                 <h3><FaMapMarkerAlt /> Lieu de l'examen</h3>
-                                <div className="detail-grid">
-                                    <div className="detail-item"><strong>Code centre :</strong> <span>{demande.codeCentre || '-'}</span></div>
-                                    <div className="detail-item"><strong>Libellé centre :</strong> <span>{demande.libelleCentre || '-'}</span></div>
-                                    <div className="detail-item"><strong>Ville :</strong> <span>{demande.ville || '-'}</span></div>
-                                </div>
+                                <div className="detail-item"><strong>Code centre:</strong> {isEditing ? <input name="codeCentre" value={editedDemande.codeCentre} onChange={handleEditChange} /> : <span>{demande.codeCentre || '-'}</span>}</div>
+                                <div className="detail-item"><strong>Libellé centre:</strong> {isEditing ? <input name="libelleCentre" value={editedDemande.libelleCentre} onChange={handleEditChange} /> : <span>{demande.libelleCentre || '-'}</span>}</div>
+                                <div className="detail-item"><strong>Ville:</strong> {isEditing ? <input name="ville" value={editedDemande.ville} onChange={handleEditChange} /> : <span>{demande.ville || '-'}</span>}</div>
                             </div>
-                            
                             <div className="detail-section">
                                 <h3><FaFileAlt /> Observations</h3>
-                                <p>{demande.observations || 'Aucune observation'}</p>
+                                {isEditing ? <textarea name="observations" value={editedDemande.observations} onChange={handleEditChange} rows="4" style={{width: '100%', padding: '8px', border: '1px solid #ccc', borderRadius: '4px'}} /> : <p>{demande.observations || 'Aucune observation'}</p>}
                             </div>
-
                             {isMissionAnnulee && demande.motifAnnulation && (
                                 <div className="detail-section">
                                     <h3>Motif d'annulation</h3>
@@ -131,61 +326,40 @@ function RequestDetailsPopup({ demande, onClose, onUpdateStatus, isDEC1, current
                                 </div>
                             )}
                         </div>
-
-                        {/* COLONNE DE DROITE */}
                         <div>
-                            <div className="detail-section intervenant-list-details">
+                            <div className="detail-section">
                                 <h3><FaUsers /> Intervenants Requis</h3>
-                                {demande.intervenants?.map((intervenant, index) => (
-                                    <div key={index}>
-                                        <ul>
-                                            <li>
-                                                <strong>{intervenant.type}</strong>
-                                                <span>Quantité : {intervenant.nombre}</span>
-                                            </li>
-                                        </ul>
-                                        <div className="date-list-details">
-                                            {intervenant.dates?.map((dateInfo, i) => (
-                                                <p key={i}>
-                                                    Le {new Date(dateInfo.date).toLocaleDateString('fr-FR')} de {dateInfo.heureDebut} à {dateInfo.heureFin}
-                                                </p>
-                                            ))}
-                                        </div>
-                                    </div>
-                                ))}
+                                {isEditing ? renderEditableIntervenants() : getIntervenantsAndDatesList()}
                             </div>
-
-                            {isDEC1 && !isMissionAnnulee && (
-                                <div className="detail-section dec1-actions">
-                                    <h4>Actions DEC1</h4>
+                            {isDEC1 && (
+                                <div className="detail-section">
+                                    <h3><FaClipboardList /> Gestion DEC1</h3>
                                     <div className="form-group">
-                                        <label htmlFor="numeroMission">N° de mission</label>
-                                        <input id="numeroMission" type="text" value={numeroMission} onChange={handleNumeroMissionChange} />
+                                        <label>N° de mission</label>
+                                        <input type="text" value={numeroMission} onChange={handleNumeroMissionChange} disabled={isMissionAnnulee || isEditing} />
                                     </div>
                                     <div className="form-group">
-                                        <label htmlFor="gestionnaireDEC1">Gestionnaire DEC1</label>
-                                        <input id="gestionnaireDEC1" type="text" value={gestionnaireDEC1} onChange={handleGestionnaireDEC1Change} />
+                                        <label>Gestionnaire DEC1</label>
+                                        <input type="text" value={gestionnaireDEC1} onChange={handleGestionnaireDEC1Change} disabled={isMissionAnnulee || isEditing} />
                                     </div>
-                                    
-                                    <DemandeStatus statut={statut} onUpdateStatus={handleStatutChange} />
-                                    
-                                    <div className="detail-section">
-                                        <h3><FaUserCheck /> Personnes recrutées ({totalIntervenantsRecrutes}/{totalIntervenantsRequis})</h3>
+                                    <div className="form-group">
+                                        <label>Statut de la demande</label>
+                                        <DemandeStatus statut={statut} onUpdateStatus={handleStatutChange} />
+                                    </div>
+                                    <div className="form-group">
+                                        <h4><FaUserCheck /> Personnes recrutées ({totalIntervenantsRecrutes}/{totalIntervenantsRequis})</h4>
                                         {renderIntervenantInputs()}
                                     </div>
-
-                                    <div className="action-buttons">
-                                        <button onClick={handleSaveChanges} className="btn-assign">Enregistrer les modifications</button>
-                                        <button onClick={handleAnnulerClick} className="btn-cancel">Annuler la demande</button>
-                                    </div>
-                                </div>
-                            )}
-
-                             {isDEC1 && isMissionAnnulee && (
-                                <div className="detail-section dec1-actions">
-                                    <h4>Actions DEC1</h4>
-                                    <div className="action-buttons">
-                                        <button onClick={() => onUpdateStatus(demande.id, 'En attente', { motifAnnulation: '' })} className="btn-assign">Réactiver la demande</button>
+                                    <div className="annulation-actions">
+                                        {!isMissionAnnulee ? (
+                                            <>
+                                                <button onClick={handleSaveChanges} className="save-changes-btn" disabled={isEditing}>Enregistrer Actions DEC1</button>
+                                                <button onClick={handleAnnulerClick} className="annuler-btn" disabled={isEditing}>Annuler la demande</button>
+                                                <button onClick={() => onDelete(demande.id)} className="delete-btn" disabled={isEditing}>Supprimer</button>
+                                            </>
+                                        ) : (
+                                            <button onClick={() => onUpdateStatus(demande.id, 'En attente', { motifAnnulation: '' })} className="reactiver-btn">Réactiver la demande</button>
+                                        )}
                                     </div>
                                 </div>
                             )}
@@ -193,14 +367,7 @@ function RequestDetailsPopup({ demande, onClose, onUpdateStatus, isDEC1, current
                     </div>
                 </div>
             </div>
-
-            {isAnnulationPopupOpen && (
-                <AnnulationPopup
-                    onCancel={handleAnnulationConfirm}
-                    onClose={() => setIsAnnulationPopupOpen(false)}
-                    currentUser={currentUser}
-                />
-            )}
+            {isAnnulationPopupOpen && <AnnulationPopup onCancel={handleAnnulationConfirm} onClose={() => setIsAnnulationPopupOpen(false)} currentUser={currentUser} />}
         </>
     );
 }

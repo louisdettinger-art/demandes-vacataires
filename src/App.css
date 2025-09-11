@@ -644,4 +644,484 @@ body {
     .dec1-actions .action-buttons {
         flex-direction: column; /* Boutons en colonne sur mobile */
     }
+}/* ========================================================================== */
+/* ==       STYLES RESTAURÉS POUR LA POPUP DE DÉTAILS DE DEMANDE            == */
+/* ========================================================================== */
+
+/* Mise en page générale des items de détails */
+.detail-item {
+    display: flex;
+    margin-bottom: 10px;
+    font-size: 15px;
+}
+.detail-item strong {
+    font-weight: 600;
+    color: #495057;
+    width: 150px;
+    flex-shrink: 0;
+}
+.detail-item span {
+    color: #2c3e50;
+    flex-grow: 1;
+}
+
+/* Style pour les groupes d'intervenants dans les détails */
+.intervenant-group-details {
+    margin-bottom: 15px;
+}
+.intervenant-item {
+    background: #e9ecef;
+    padding: 8px 15px;
+    border-radius: 6px;
+    margin-bottom: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 15px;
+}
+.intervenant-item strong {
+    font-size: 16px;
+    color: #667eea;
+}
+.dates-section {
+    padding-left: 20px;
+    border-left: 2px solid #e0e6ed;
+    margin-left: 10px;
+}
+.date-item {
+    margin-bottom: 10px;
+}
+.date-time {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+}
+
+/* Style pour l'indicateur de pause méridienne */
+.pause-indicator {
+    background-color: #ffecb3;
+    color: #343a40;
+    padding: 3px 8px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+/* Styles pour les boutons de statut (composant DemandeStatus) */
+.status-buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+.status-btn {
+    padding: 10px 15px; /* Augmentation de la taille */
+    border: 2px solid transparent;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    color: white;
+    transition: all 0.3s ease;
+    opacity: 0.7;
+    font-size: 14px; /* Augmentation de la taille */
+}
+.status-btn:hover {
+    opacity: 1;
+    transform: translateY(-2px);
+}
+.status-btn.active {
+    opacity: 1;
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.5), 0 5px 10px rgba(0,0,0,0.1);
+}
+.status-btn.en-attente { background-color: #ffc107; }
+.status-btn.en-cours { background-color: #17a2b8; }
+.status-btn.terminee { background-color: #28a745; }
+
+
+/* Boutons d'action Enregistrer, Annuler, Réactiver */
+.annulation-actions {
+    display: flex;
+    gap: 15px;
+    justify-content: flex-end;
+    margin-top: 20px;
+    border-top: 1px solid #e0e6ed;
+    padding-top: 20px;
+}
+.save-changes-btn, .annuler-btn, .reactiver-btn {
+    padding: 12px 24px;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+.save-changes-btn { background: #007bff; color: white; }
+.annuler-btn { background-color: #dc3545; color: white; }
+.reactiver-btn { background-color: #28a745; color: white; }
+
+.save-changes-btn:hover { background: #0056b3; }
+.annuler-btn:hover { background-color: #c82333; }
+.reactiver-btn:hover { background-color: #218838; }/* Styles pour le bouton "Modifier la demande" en haut */
+.edit-btn {
+    background-color: #ffc107;
+    color: #212529;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.edit-btn:hover {
+    background-color: #e0a800;
+}
+
+/* Styles pour le formulaire d'édition des intervenants */
+.detail-section .intervenant-group {
+    border: 1px solid #dee2e6;
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+}
+
+.detail-section .intervenant-row, .detail-section .date-row {
+    display: grid;
+    gap: 10px;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.detail-section .intervenant-row {
+    grid-template-columns: 2fr 1fr auto;
+}
+
+.detail-section .date-row {
+    grid-template-columns: 2fr 1fr 1fr auto;
+    padding-left: 15px;
+}/* Dans src/App.css */
+
+.recruitment-group {
+    margin-bottom: 20px;
+    padding: 15px;
+    border: 1px solid #e0e6ed;
+    border-radius: 8px;
+    background-color: #f8f9fa;
+}
+
+.recruitment-group h4 {
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #dee2e6;
+    color: #495057;
+    font-size: 16px;
+}/* --- Boutons "Nouvelle demande" et "Rechercher une demande" --- */
+.management-content > div:first-child {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.management-content > div:first-child > div:first-child {
+    display: flex; /* Permet aux boutons d'être sur la même ligne */
+    gap: 15px;    /* Augmente l'espacement entre les boutons */
+}
+
+.new-request-btn,
+.search-request-btn {
+    background-color: #007bff; /* Ou votre couleur primaire préférée */
+    color: white;
+    padding: 12px 25px; /* Augmente la taille du padding */
+    border: none;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Ajout d'une petite ombre */
+}
+
+.new-request-btn:hover,
+.search-request-btn:hover {
+    background-color: #0056b3;
+}
+
+/* --- Boutons de tri "Échéance" et "Date de création" --- */
+.sort-buttons {
+    display: flex;
+    align-items: center;
+    gap: 10px; /* Espacement entre le texte "Trier par" et les boutons, et entre les boutons */
+    font-size: 14px;
+    color: #555;
+}
+
+.sort-buttons span {
+    font-weight: 500;
+    margin-right: 5px; /* Ajuste l'espacement avant les boutons */
+}
+
+.sort-btn {
+    background-color: #e9ecef; /* Couleur de fond par défaut */
+    color: #495057;
+    padding: 8px 15px; /* Padding plus doux */
+    border: 1px solid #ced4da; /* Bordure légère */
+    border-radius: 6px; /* Bords légèrement arrondis */
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap; /* Empêche le texte de passer à la ligne */
+}
+
+.sort-btn:hover {
+    background-color: #dee2e6;
+    border-color: #adb5bd;
+}
+
+.sort-btn.active {
+    background-color: #6c757d; /* Couleur de fond pour le bouton actif */
+    color: white;
+    border-color: #6c757d;
+    font-weight: 600;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.sort-btn.active:hover {
+    background-color: #5a6268;
+    border-color: #545b62;
+}
+
+
+/* --- Styles existants pour les popups d'édition --- */
+/* Pour éviter que le bouton "Enregistrer Actions DEC1" ne soit désactivé visuellement  */
+.annulation-actions .save-changes-btn:disabled,
+.annulation-actions .annuler-btn:disabled {
+    opacity: 0.6; /* Rendre le bouton légèrement transparent */
+    cursor: not-allowed;
+    background-color: #ccc; /* Changer la couleur de fond */
+    color: #666; /* Changer la couleur du texte */
+}
+
+/* Assurez-vous que le style du bouton d'édition initial est bon */
+.edit-btn {
+    background-color: #ffc107;
+    color: #212529;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.edit-btn:hover {
+    background-color: #e0a800;
+}
+
+/* Styles pour le mode édition des demandes */
+.popup-header .edit-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.popup-header .edit-actions button {
+    padding: 8px 15px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.popup-header .edit-actions .save-changes-btn {
+    background-color: #28a745;
+    color: white;
+    border: 1px solid #28a745;
+}
+.popup-header .edit-actions .save-changes-btn:hover {
+    background-color: #218838;
+}
+
+.popup-header .edit-actions .annuler-btn {
+    background-color: #dc3545;
+    color: white;
+    border: 1px solid #dc3545;
+}
+.popup-header .edit-actions .annuler-btn:hover {
+    background-color: #c82333;
+}
+
+/* Styles pour le formulaire d'édition des intervenants */
+.detail-section .intervenant-group {
+    border: 1px solid #dee2e6;
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+}
+
+.detail-section .intervenant-row, .detail-section .date-row {
+    display: grid;
+    gap: 10px;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.detail-section .intervenant-row {
+    grid-template-columns: 2fr 1fr auto;
+}
+
+.detail-section .date-row {
+    grid-template-columns: 2fr 1fr 1fr auto;
+    padding-left: 15px; /* Indente les dates */
+}
+
+.detail-section .intervenant-group .remove-btn,
+.detail-section .add-date-btn {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 6px 10px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    font-size: 12px;
+}
+
+.detail-section .intervenant-group .remove-btn:hover {
+    background-color: #c82333;
+}
+
+.detail-section .add-date-btn {
+    background-color: #17a2b8; /* Une couleur différente pour "Ajouter date" */
+    margin-top: 5px;
+    padding: 8px 12px;
+    font-size: 13px;
+}
+.detail-section .add-date-btn:hover {
+    background-color: #138496;
+}
+
+.detail-section .add-btn { /* Bouton "Ajouter un groupe d'intervenants" */
+    background-color: #28a745;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 10px 15px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    margin-top: 15px;
+    width: fit-content;
+    display: block; /* Pour centrer si besoin ou prendre toute la largeur */
+}
+.detail-section .add-btn:hover {
+    background-color: #218838;
+}
+
+/* Styles pour les groupes d'intervenants recrutés */
+.recruitment-group {
+    margin-bottom: 20px;
+    padding: 15px;
+    border: 1px solid #e0e6ed;
+    border-radius: 8px;
+    background-color: #f8f9fa;
+}
+
+.recruitment-group h4 {
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #dee2e6;
+    color: #495057;
+    font-size: 16px;
+}/* Dans src/App.css */
+
+/* --- Nouveaux styles pour les cartes de demande urgentes --- */
+
+/* Style de base pour toutes les cartes */
+.request-card {
+    border-left: 5px solid transparent; /* Bordure par défaut */
+    transition: all 0.3s ease;
+    /* ... (vos autres styles pour .request-card) ... */
+}
+
+/* Vert : Échéance > 1 mois */
+.request-card.priority-low {
+    background-color: rgba(40, 167, 69, 0.1); /* Vert très transparent */
+    border-left-color: #28a745; /* Bordure verte solide */
+}
+
+/* Orange : Échéance < 3 semaines */
+.request-card.priority-medium {
+    background-color: rgba(255, 193, 7, 0.1); /* Orange très transparent */
+    border-left-color: #ffc107; /* Bordure orange solide */
+}
+
+/* Rouge : Échéance < 1 semaine */
+.request-card.priority-high {
+    background-color: rgba(220, 53, 69, 0.1); /* Rouge très transparent */
+    border-left-color: #dc3545; /* Bordure rouge solide */
+}/* Dans src/App.css */
+
+.status {
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.status-pending {
+    background-color: #fff3cd; /* Jaune */
+    color: #856404;
+}
+.status-inprogress {
+    background-color: #d1ecf1; /* Bleu */
+    color: #0c5460;
+}
+.status-completed {
+    background-color: #d4edda; /* Vert */
+    color: #155724;
+}
+.status-cancelled {
+    background-color: #f8d7da; /* Rouge */
+    color: #721c24;
+}.delete-btn {
+    background-color: #5a6268; /* Gris foncé */
+    color: white;
+}
+.delete-btn:hover {
+    background-color: #494f54;
+}
+
+.confirm-delete-btn {
+    background-color: #dc3545 !important; /* Rouge vif pour confirmer */
+    color: white;
+}
+.confirm-delete-btn:hover {
+    background-color: #c82333 !important;
+}.pdf-btn {
+    background-color: #17a2b8; /* Bleu-vert */
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.pdf-btn:hover {
+    background-color: #138496;
 }
