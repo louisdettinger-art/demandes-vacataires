@@ -4,20 +4,38 @@ import etablissementsData from '../etablissements.json';
 function NewRequestPopup({ currentUser, onClose, onSubmit, templateData }) {
     
     const getInitialState = () => {
-        if (templateData) {
-            return {
-                ...templateData,
-                bureau: currentUser,
-                intervenants: [{ type: '', nombre: 1, dates: [{ date: '', heureDebut: '', heureFin: '', pauseMeridienne: false }] }],
-            };
-        }
-        return {
+        // L'état par défaut pour une demande vierge ou réinitialisée
+        const defaultState = {
             bureau: currentUser,
             domaine: '', specialite: '', epreuve: '', gestionnaire: '',
             intervenants: [{ type: '', nombre: 1, dates: [{ date: '', heureDebut: '', heureFin: '', pauseMeridienne: false }] }],
             codeCentre: '', libelleCentre: '', ville: '', codePostal: '',
-            observations: ''
+            observations: '',
+            // On s'assure que ces champs sont aussi dans l'état par défaut
+            statut: 'En attente',
+            intervenantsRecrutes: [],
+            numeroMission: '',
+            gestionnaireDEC1: '',
+            motifAnnulation: '',
         };
+
+        if (templateData) {
+            // Si on a un modèle, on prend certaines de ses valeurs...
+            return {
+                ...defaultState, // On commence avec une base vierge
+                domaine: templateData.domaine,
+                specialite: templateData.specialite,
+                epreuve: templateData.epreuve,
+                gestionnaire: templateData.gestionnaire,
+                codeCentre: templateData.codeCentre,
+                libelleCentre: templateData.libelleCentre,
+                ville: templateData.ville,
+                codePostal: templateData.codePostal,
+                observations: templateData.observations,
+            };
+        }
+        // Sinon, on retourne l'état vierge complet
+        return defaultState;
     };
 
     const [demande, setDemande] = useState(getInitialState());

@@ -1,3 +1,5 @@
+// src/components/ManagementPage.jsx
+
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { db, auth } from '../firebase';
 import { collection, addDoc, onSnapshot, doc, updateDoc, deleteDoc } from "firebase/firestore"; 
@@ -89,8 +91,11 @@ function ManagementPage({ currentUser, onLogout }) {
     };
 
     const triggerDeleteConfirmation = (demandeId) => {
+        // Avant d'ouvrir la confirmation, on s'assure de fermer la popup de détails
+        setSelectedDemande(null);
         setDeleteConfirmation({ show: true, demandeId });
     };
+
     const handleBellClick = () => { setIsPanelOpen(prev => !prev); markAsRead(); };
     const handleNotificationClick = (demandeId) => {
         const demandeToOpen = demandes.find(d => d.id === demandeId);
@@ -141,12 +146,20 @@ function ManagementPage({ currentUser, onLogout }) {
     };
     const handleCardClick = (demande) => setSelectedDemande(demande);
     const handleCloseDetailsPopup = () => setSelectedDemande(null);
+    
+    // CORRECTION ICI : La fonction de mise à jour est maintenant plus robuste
     const handleUpdateStatus = async (id, newStatus, updatedData) => {
         const demandeDocRef = doc(db, "demandes", id);
         try {
-            await updateDoc(demandeDocRef, { statut: newStatus, ...updatedData });
-        } catch (error) { console.error("Erreur : ", error); alert("La mise à jour a échoué."); }
+            // On s'assure que updatedData est un objet valide
+            const dataToUpdate = updatedData ? { statut: newStatus, ...updatedData } : { statut: newStatus };
+            await updateDoc(demandeDocRef, dataToUpdate);
+        } catch (error) { 
+            console.error("Erreur lors de la mise à jour de la demande : ", error);
+            alert("La mise à jour a échoué. Le document n'existe peut-être plus."); 
+        }
     };
+    
     const handleSort = (key) => { 
         if (sortKey === key) { 
             setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc'); 
@@ -219,7 +232,12 @@ function ManagementPage({ currentUser, onLogout }) {
     useEffect(() => {
         if (selectedDemande) {
             const updatedDemande = demandes.find(d => d.id === selectedDemande.id);
-            setSelectedDemande(updatedDemande);
+            // Si la demande n'est plus dans la liste (ex: supprimée), on ferme le popup
+            if (!updatedDemande) {
+                setSelectedDemande(null);
+            } else {
+                setSelectedDemande(updatedDemande);
+            }
         }
     }, [demandes, selectedDemande]);
 

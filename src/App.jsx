@@ -36,7 +36,6 @@ function App() {
 
     return (
         <NotificationProvider>
-            {/* La classe change dynamiquement ici, c'est la clé du design */}
             <div className={currentUserBureau ? "app-wrapper" : "login-wrapper"}>
                 {currentUserBureau ? (
                     <ManagementPage currentUser={currentUserBureau} onLogout={handleLogout} />
