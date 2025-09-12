@@ -229,8 +229,7 @@ function ManagementPage({ currentUser, onLogout }) {
                 <div className="container">
                     <div className="header-content">
                         <div className="app-branding">
-                            <span className="app-title">Hermès</span>
-                            <img src="/hermes.png" alt="Logo" className="header-logo" />
+                            <img src="/nexuslogo.png" alt="Logo Nexus" className="header-logo" /> 
                         </div>
                         <div className="page-title-section">
                             <h1>Gestion des demandes</h1>
@@ -258,7 +257,6 @@ function ManagementPage({ currentUser, onLogout }) {
                         <button onClick={() => handleSort('dateCreation')} className={`sort-btn ${sortKey === 'dateCreation' ? 'active' : ''}`}>Date de création</button>
                     </div>
                 </div>
-
                 <div className="tabs-section">
                     <div className="tabs-header">
                         <button className={`tab-btn ${activeTab === 'attente' ? 'active' : ''}`} onClick={() => setActiveTab('attente')}>Demandes en attente (<span>{tabCounts.attente}</span>)</button>

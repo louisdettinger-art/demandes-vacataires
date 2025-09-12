@@ -1,13 +1,6 @@
 import React, { useState } from 'react';
-import {
-    signInWithEmailAndPassword,
-    setPersistence,
-    browserSessionPersistence,
-    browserLocalPersistence
-} from "firebase/auth";
-// CORRECTION : Le chemin a été ajusté pour remonter d'un dossier
-import { auth } from '../firebase'; 
-import './LoginPage.css'; // Assurez-vous que ce fichier est dans le même dossier que LoginPage.jsx
+import { signInWithEmailAndPassword, setPersistence, browserSessionPersistence, browserLocalPersistence } from "firebase/auth";
+import { auth } from '../firebase';
 
 function LoginPage() {
     const [email, setEmail] = useState('');
@@ -20,7 +13,7 @@ function LoginPage() {
         setError('');
 
         if (!email || !password) {
-            setError('Veuillez remplir tous les champs.');
+            alert('Veuillez remplir tous les champs');
             return;
         }
 
@@ -36,65 +29,57 @@ function LoginPage() {
 
     return (
         <div className="login-container">
-            <div className="login-card">
-                <div className="header-app-name">
-                    <h1>Hermès</h1>
-                    <p>Votre application de demande de vacataires</p>
-                </div>
-
-                <div className="form-content">
-                    <p className="welcome-message">Connectez-vous pour accéder à votre espace de gestion 👇</p>
-                    <form onSubmit={handleLogin}>
-                        <div className="form-group">
-                            <label htmlFor="email">E-mail du bureau</label>
-                            <input
-                                type="email"
-                                id="email"
-                                placeholder="Ex: dec1@monapp.com"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                required
-                            />
-                        </div>
-                        <div className="form-group">
-                            <label htmlFor="password">Mot de passe</label>
-                            <input
-                                type="password"
-                                id="password"
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                required
-                            />
-                        </div>
-                        {/* CORRECTION : On retire la classe "form-group" pour permettre le centrage */}
-                        <div className="remember-me">
-                            <input
-                                type="checkbox"
-                                id="rememberMe"
-                                checked={rememberMe}
-                                onChange={(e) => setRememberMe(e.target.checked)}
-                            />
-                            <label htmlFor="rememberMe">Se souvenir de moi</label>
-                        </div>
-                        
-                        {error && <p className="error-message">{error}</p>}
-                        
-                        <button type="submit" className="login-btn">Se connecter 🚀</button>
-                    </form>
-                </div>
+            <div className="header">
+                {/* On affiche votre logo ici */}
+                <img src="/nexus-login.png" alt="Logo Nexus" className="login-logo" />
             </div>
 
-            <div className="did-you-know-card">
-                <h3>Le saviez-vous ? 💡</h3>
-                <p>
-                    Hermès est le Dieu des messagers, des communications, du commerce et des voyageurs.
-                    Notre application agit comme un messager entre les bureaux d'examen et les surveillants.
-                    Hermès est le dieu des échanges et de la rapidité, ce qui reflète parfaitement la fonction de notre plateforme à mettre rapidement en relation les parties.
-                </p>
+            <form onSubmit={handleLogin}>
+                <div className="form-group">
+                    <label htmlFor="email">E-mail du bureau</label>
+                    <input 
+                        type="email" 
+                        id="email" 
+                        placeholder="Ex: dec1@monapp.com"
+                        value={email} 
+                        onChange={(e) => setEmail(e.target.value)} 
+                        required
+                    />
+                </div>
+                <div className="form-group">
+                    <label htmlFor="password">Mot de passe</label>
+                    <input 
+                        type="password" 
+                        id="password" 
+                        value={password} 
+                        onChange={(e) => setPassword(e.target.value)} 
+                        required 
+                    />
+                </div>
+                <div className="form-group remember-me">
+                    <input 
+                        type="checkbox" 
+                        id="rememberMe" 
+                        checked={rememberMe} 
+                        onChange={(e) => setRememberMe(e.target.checked)} 
+                    />
+                    <label htmlFor="rememberMe">Se souvenir de moi</label>
+                </div>
+                
+                {error && <p className="error-message">{error}</p>}
+
+                <button type="submit" className="login-btn">
+                    <span role="img" aria-label="connexion">🔑</span> Se connecter
+                </button>
+            </form>
+
+            {/* Encart "Le saviez-vous ?" */}
+            <div className="did-you-know">
+                <h4>Le saviez-vous ?</h4>
+                <p>Nexus vient du latin, ce mot désigne un "lien", un "nœud" ou une "connexion". Notre application est le lien central qui connecte les organisateurs d'examens et les surveillants.</p>
             </div>
         </div>
     );
 }
 
 export default LoginPage;
-
