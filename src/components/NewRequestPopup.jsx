@@ -1,15 +1,26 @@
 import React, { useState } from 'react';
 import etablissementsData from '../etablissements.json';
 
-function NewRequestPopup({ currentUser, onClose, onSubmit }) {
-    const [demande, setDemande] = useState({
-        bureau: currentUser,
-        domaine: '', specialite: '', epreuve: '', gestionnaire: '',
-        intervenants: [{ type: '', nombre: 1, dates: [{ date: '', heureDebut: '', heureFin: '', pauseMeridienne: false }] }],
-        codeCentre: '', libelleCentre: '', ville: '', codePostal: '',
-        observations: ''
-    });
+function NewRequestPopup({ currentUser, onClose, onSubmit, templateData }) {
+    
+    const getInitialState = () => {
+        if (templateData) {
+            return {
+                ...templateData,
+                bureau: currentUser,
+                intervenants: [{ type: '', nombre: 1, dates: [{ date: '', heureDebut: '', heureFin: '', pauseMeridienne: false }] }],
+            };
+        }
+        return {
+            bureau: currentUser,
+            domaine: '', specialite: '', epreuve: '', gestionnaire: '',
+            intervenants: [{ type: '', nombre: 1, dates: [{ date: '', heureDebut: '', heureFin: '', pauseMeridienne: false }] }],
+            codeCentre: '', libelleCentre: '', ville: '', codePostal: '',
+            observations: ''
+        };
+    };
 
+    const [demande, setDemande] = useState(getInitialState());
     const [suggestions, setSuggestions] = useState([]);
     const [isSuggestionsOpen, setIsSuggestionsOpen] = useState(false);
 
@@ -230,7 +241,7 @@ function NewRequestPopup({ currentUser, onClose, onSubmit }) {
                                                 </div>
                                                 <div className="form-group pause-checkbox">
                                                     <input type="checkbox" name="pauseMeridienne" checked={date.pauseMeridienne} onChange={(e) => handleDateChange(e, intervenantIndex, dateIndex)} id={`pause-${intervenantIndex}-${dateIndex}`} />
-                                                    <label htmlFor={`pause-${intervenantIndex}-${dateIndex}`}>Pause méridienne</label> {/* Correction ici */}
+                                                    <label htmlFor={`pause-${intervenantIndex}-${dateIndex}`}>Pause méridienne</label>
                                                 </div>
                                                 {intervenant.dates.length > 1 && (
                                                     <button type="button" className="remove-btn" onClick={() => removeDate(intervenantIndex, dateIndex)}>

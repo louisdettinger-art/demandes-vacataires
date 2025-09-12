@@ -37,12 +37,12 @@ body, html, #root {
 /* ==                     3. PAGE DE CONNEXION                               == */
 /* ========================================================================== */
 .login-container {
-    background: white;
+    background:;
     border-radius: 15px;
     box-shadow: 0 20px 40px rgba(0,0,0,0.1);
     padding: 40px;
     width: 100%;
-    max-width: 450px;
+    width: 100%;
 }
 .login-container .header { text-align: center; margin-bottom: 30px; }
 .login-container .header h1 { color: #2c3e50; font-size: 24px; margin-bottom: 8px; font-weight: 600; }
@@ -61,16 +61,34 @@ body, html, #root {
 /* ========================================================================== */
 .management-header {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white; padding: 20px 0; margin-bottom: 30px;
-    position: relative; z-index: 100;
+    color: white; 
+    padding: 0 40px; /* Padding horizontal au lieu de vertical */
+    margin-bottom: 30px;
+    position: relative; 
+    z-index: 100;
 }
-.management-header .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; position: relative; }
-.management-header h1 { font-size: 28px; margin-bottom: 5px; }
-.management-header p { opacity: 0.9; font-size: 16px; }
+.management-header .container { 
+    max-width: none; /* On retire la largeur max pour la pleine page */
+    width: 100%;
+    margin: 0 auto; 
+    padding: 0; /* On retire le padding ici car il est sur le parent */
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 80px;
+}
+
+.header-content { display: flex; align-items: center; gap: 25px; }
+.app-branding { display: flex; align-items: center; gap: 15px; border-right: 1px solid rgba(255, 255, 255, 0.3); padding-right: 25px; }
+.app-title { font-size: 28px; font-weight: 700; color: #fff; }
+.header-logo { height: 40px; width: auto; }
+.page-title-section h1 { font-size: 24px; margin: 0; font-weight: 500; }
+.page-title-section p { margin: 0; opacity: 0.8; font-size: 15px; }
 
 .account-actions {
-    position: absolute; top: 50%; right: 20px; transform: translateY(-50%);
-    display: flex; gap: 15px; align-items: center; z-index: 102;
+    position: relative;
+    display: flex; gap: 15px; align-items: center;
 }
 .account-btn, .logout-btn {
     background: rgba(255,255,255,0.2); color: white; border: 1px solid rgba(255,255,255,0.3);
@@ -79,7 +97,12 @@ body, html, #root {
 }
 .account-btn:hover, .logout-btn:hover { background: rgba(255, 255, 255, 0.3); }
 
-.management-content { max-width: 1200px; margin: 0 auto; padding: 0 20px 40px 20px; }
+.management-content { 
+    width: 100%;
+    max-width: none; /* On retire la largeur max pour la pleine page */
+    margin: 0;
+    padding: 0 40px 40px 40px; 
+}
 
 .actions-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 15px; }
 .main-actions { display: flex; gap: 15px; }
@@ -123,7 +146,6 @@ body, html, #root {
 .popup-content { background: white; border-radius: 15px; padding: 30px; width: 95%; max-width: 1000px; max-height: 95vh; overflow-y: auto; box-shadow: 0 20px 40px rgba(0,0,0,0.2); }
 .popup-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 2px solid #e9ecef; }
 .close-btn { background: none; border: none; font-size: 24px; color: #7f8c8d; cursor: pointer; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; }
-
 .form-group { margin-bottom: 20px; }
 .form-group label { display: block; margin-bottom: 8px; color: #2c3e50; font-weight: 500; font-size: 14px; }
 .form-group select, .form-group input, .form-group textarea { width: 100%; padding: 12px 15px; border: 2px solid #e0e6ed; border-radius: 8px; font-size: 16px; transition: all 0.3s ease; background: white; color: #2c3e50; }
@@ -152,7 +174,6 @@ body, html, #root {
 .add-btn { background: #28a745; margin-top: 10px; }
 .add-date-btn { background: #17a2b8; }
 .remove-btn { background: #dc3545; }
-
 
 /* ========================================================================== */
 /* ==                 6. STYLES SPÉCIFIQUES POPUP DE DÉTAILS                 == */
@@ -191,7 +212,6 @@ body, html, #root {
 
 .edit-btn { background-color: #ffc107; color: #212529; padding: 8px 15px; border: none; border-radius: 6px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; display: flex; align-items: center; gap: 8px; }
 .edit-btn:hover { background-color: #e0a800; }
-
 .pdf-btn { background-color: #17a2b8; color: white; padding: 8px 15px; border: none; border-radius: 6px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; display: flex; align-items: center; gap: 8px; }
 .pdf-btn:hover { background-color: #138496; }
 
@@ -225,28 +245,46 @@ body, html, #root {
 /* ==                 STYLES POUR AUTOCOMPLETION                             == */
 /* ========================================================================== */
 .autocomplete-container { position: relative; }
-.suggestions-list { position: absolute; top: 100%; left: 0; right: 0; background-color: white; border: 1px solid #dee2e6; border-top: none; border-radius: 0 0 8px 8px; list-style: none; padding: 0; margin: 0; max-height: 200px; overflow-y: auto; z-index: 10; box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
+.suggestions-list { position: absolute; top: 100%; left: 0; right: 0; background-color: white; border: 1px solid #dee2e6; border-top: none; border-radius: 0 0 8px 8px; list-style: none; padding: 0; margin: 0; max-height: 200px; overflow-y: auto; z-index: 1000; box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
 .suggestions-list li { padding: 12px 15px; cursor: pointer; font-size: 14px; }
 .suggestions-list li:hover { background-color: #f8f9fa; }
-/* ========================================================================== */
-/* ==               CORRECTION SPÉCIFIQUE PAUSE MÉRIDIENNE                 == */
-/* ========================================================================== */
-.date-row .form-group.pause-checkbox {
+/* Dans src/App.css */
+
+/* Rend l'en-tête de la carte flexible pour bien positionner les éléments */
+.request-header {
     display: flex;
-    align-items: center; /* Centre verticalement */
-    gap: 5px; /* Espace entre la checkbox et le label */
-    margin-bottom: 0;
-    flex-shrink: 0; /* Empêche le rétrécissement sur les petits écrans */
-    min-width: unset; /* Annule le min-width précédent si défini pour les inputs */
-    flex-basis: auto; /* Permet au conteneur de prendre juste l'espace nécessaire */
+    justify-content: space-between;
+    align-items: flex-start; /* Aligne en haut */
+    margin-bottom: 10px;
 }
 
-.date-row .form-group.pause-checkbox input[type="checkbox"] {
-    width: auto; /* La case ne prend pas toute la largeur */
-    margin-top: 2px; /* Ajustement fin pour l'alignement visuel */
+.header-main-content {
+    display: flex;
+    align-items: center;
+    gap: 15px; /* Espace entre le titre et le statut */
 }
 
-.date-row .form-group.pause-checkbox label {
-    margin-bottom: 0; /* Supprime la marge sous le label */
-    white-space: nowrap; /* Empêche le texte de se casser sur plusieurs lignes */
+/* Positionnement du bouton "Créer à partir de" */
+.card-actions {
+    margin-left: auto; /* Pousse le bouton complètement à droite */
+    padding-left: 15px;
+}
+
+.create-from-btn {
+    background-color: #6c757d; /* Gris neutre */
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap; /* Empêche le texte de se couper */
+}
+
+.create-from-btn:hover {
+    background-color: #5a6268;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }

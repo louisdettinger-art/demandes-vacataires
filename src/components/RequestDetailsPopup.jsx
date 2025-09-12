@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import DemandeStatus from './DemandeStatus';
 import AnnulationPopup from './AnnulationPopup';
-import { FaInfoCircle, FaMapMarkerAlt, FaUsers, FaClipboardList, FaUserCheck, FaFileAlt, FaEdit, FaSave, FaFilePdf } from 'react-icons/fa';
+import { FaInfoCircle, FaMapMarkerAlt, FaUsers, FaClipboardList, FaUserCheck, FaFileAlt, FaEdit, FaSave, FaFilePdf, FaTrashAlt } from 'react-icons/fa';
 import { db } from '../firebase';
 import { doc, updateDoc } from 'firebase/firestore';
 import jsPDF from 'jspdf';
@@ -27,6 +27,7 @@ function RequestDetailsPopup({ demande, onClose, onUpdateStatus, isDEC1, current
         }
     }, [demande]);
     
+    // Fonction de génération de PDF, placée ici pour être bien définie
     const generatePDF = () => {
         const doc = new jsPDF();
         let y = 15;

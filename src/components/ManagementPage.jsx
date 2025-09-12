@@ -51,6 +51,7 @@ function ManagementPage({ currentUser, onLogout }) {
     const [sortDirection, setSortDirection] = useState('asc');
     const [alertInfo, setAlertInfo] = useState({ show: false, title: '', message: '' });
     const [deleteConfirmation, setDeleteConfirmation] = useState({ show: false, demandeId: null });
+    const [templateDemande, setTemplateDemande] = useState(null);
 
     useEffect(() => {
         const q = collection(db, "demandes");
@@ -107,7 +108,10 @@ function ManagementPage({ currentUser, onLogout }) {
         }
     };
     const handleOpenPopup = () => setIsPopupOpen(true);
-    const handleClosePopup = () => setIsPopupOpen(false);
+    const handleClosePopup = () => {
+        setIsPopupOpen(false);
+        setTemplateDemande(null);
+    };
     const handleOpenSearchPopup = () => setIsSearchPopupOpen(true);
     const handleCloseSearchPopup = () => setIsSearchPopupOpen(false);
     const handleSearch = (criteres) => { setSearchCriteres(criteres); setActiveTab('toutes'); handleCloseSearchPopup(); };
@@ -151,6 +155,11 @@ function ManagementPage({ currentUser, onLogout }) {
             setSortDirection('asc'); 
         } 
     };
+    const handleCreateFrom = (demandeTemplate) => {
+        setTemplateDemande(demandeTemplate);
+        handleOpenPopup();
+    };
+
     const filteredAndSortedDemandes = useMemo(() => {
         let filtered = isDEC1 ? demandes : demandes.filter(d => d.bureau === currentUser);
         const criteres = Object.entries(searchCriteres).filter(([, value]) => value && String(value).trim() !== '');
@@ -169,10 +178,12 @@ function ManagementPage({ currentUser, onLogout }) {
             const statutMap = { attente: 'En attente', cours: 'En cours', terminees: 'Terminée', annulees: 'Annulée' };
             filtered = filtered.filter(d => d.statut === statutMap[activeTab]);
         }
+        
         const processedDemandes = filtered.map(demande => ({
             ...demande,
             echeance: getEarliestDate(demande)
         }));
+
         return processedDemandes.sort((a, b) => {
             let aValue, bValue;
             if (sortKey === 'echeance') {
@@ -193,8 +204,9 @@ function ManagementPage({ currentUser, onLogout }) {
             return 0;
         });
     }, [demandes, activeTab, searchCriteres, currentUser, isDEC1, sortKey, sortDirection]);
+
     const tabCounts = useMemo(() => {
-        const userRequests = isDEC1 ? demandes : demandes.filter(d => d.bureau === currentUser);
+        const userRequests = isDEC1 ? (demandes || []) : (demandes || []).filter(d => d.bureau === currentUser);
         return { 
             attente: userRequests.filter(d => d.statut === 'En attente').length, 
             cours: userRequests.filter(d => d.statut === 'En cours').length, 
@@ -203,6 +215,7 @@ function ManagementPage({ currentUser, onLogout }) {
             toutes: userRequests.length, 
         };
     }, [demandes, currentUser, isDEC1]);
+
     useEffect(() => {
         if (selectedDemande) {
             const updatedDemande = demandes.find(d => d.id === selectedDemande.id);
@@ -214,8 +227,16 @@ function ManagementPage({ currentUser, onLogout }) {
         <div className="management-page">
             <div className="management-header">
                 <div className="container">
-                    <h1>Gestion des demandes</h1>
-                    <p>Bureau : <span>{currentUser}</span></p>
+                    <div className="header-content">
+                        <div className="app-branding">
+                            <span className="app-title">Hermès</span>
+                            <img src="/hermes.png" alt="Logo" className="header-logo" />
+                        </div>
+                        <div className="page-title-section">
+                            <h1>Gestion des demandes</h1>
+                            <p>Bureau : <span>{currentUser}</span></p>
+                        </div>
+                    </div>
                     <div className="account-actions">
                         <NotificationBell onClick={handleBellClick} />
                         <button className="account-btn" onClick={() => setIsPasswordPopupOpen(true)}>Modifier le mot de passe</button>
@@ -224,6 +245,7 @@ function ManagementPage({ currentUser, onLogout }) {
                     {isPanelOpen && <NotificationPanel onNotificationClick={handleNotificationClick} onClear={() => setIsPanelOpen(false)} />}
                 </div>
             </div>
+            
             <div className="management-content">
                 <div className="actions-bar">
                     <div className="main-actions">
@@ -236,6 +258,7 @@ function ManagementPage({ currentUser, onLogout }) {
                         <button onClick={() => handleSort('dateCreation')} className={`sort-btn ${sortKey === 'dateCreation' ? 'active' : ''}`}>Date de création</button>
                     </div>
                 </div>
+
                 <div className="tabs-section">
                     <div className="tabs-header">
                         <button className={`tab-btn ${activeTab === 'attente' ? 'active' : ''}`} onClick={() => setActiveTab('attente')}>Demandes en attente (<span>{tabCounts.attente}</span>)</button>
@@ -256,6 +279,7 @@ function ManagementPage({ currentUser, onLogout }) {
                                             demande={demande} 
                                             onClick={() => handleCardClick(demande)}
                                             priorityClass={getPriorityClass(demande.echeance)}
+                                            onCreateFrom={handleCreateFrom}
                                         />
                                     ))}
                                 </div>
@@ -264,7 +288,13 @@ function ManagementPage({ currentUser, onLogout }) {
                     </div>
                 </div>
             </div>
-            {isPopupOpen && <NewRequestPopup currentUser={currentUser} onClose={handleClosePopup} onSubmit={handleNewDemandeSubmit} />}
+            
+            {isPopupOpen && <NewRequestPopup 
+                currentUser={currentUser} 
+                onClose={handleClosePopup} 
+                onSubmit={handleNewDemandeSubmit} 
+                templateData={templateDemande} 
+            />}
             {isSearchPopupOpen && <SearchPopup onSearch={handleSearch} onClose={handleCloseSearchPopup} />}
             {selectedDemande && (
                 <RequestDetailsPopup

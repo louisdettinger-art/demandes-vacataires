@@ -1,6 +1,6 @@
 import React from 'react';
 
-function RequestCard({ demande, onClick, priorityClass }) {
+function RequestCard({ demande, onClick, priorityClass, onCreateFrom }) {
     const totalIntervenants = demande.intervenants
         ? demande.intervenants.reduce((total, int) => total + (parseInt(int.nombre, 10) || 0), 0)
         : 0;
@@ -20,34 +20,40 @@ function RequestCard({ demande, onClick, priorityClass }) {
 
     const getStatusClass = (statut) => {
         switch (statut) {
-            case 'En cours':
-                return 'status-inprogress';
-            case 'Terminée':
-                return 'status-completed';
-            case 'Annulée':
-                return 'status-cancelled';
-            case 'En attente':
-            default:
-                return 'status-pending';
+            case 'En cours': return 'status-inprogress';
+            case 'Terminée': return 'status-completed';
+            case 'Annulée': return 'status-cancelled';
+            case 'En attente': default: return 'status-pending';
         }
+    };
+
+    const handleCreateFromClick = (e) => {
+        e.stopPropagation(); 
+        onCreateFrom(demande);
     };
 
     return (
         <div className={`request-card ${priorityClass}`} onClick={onClick}>
             <div className="request-header">
-                <h4>{demande.titreComplet || 'Titre non spécifié'}</h4>
-                <span className={`status ${getStatusClass(demande.statut)}`}>{demande.statut}</span>
+                {/* On crée un conteneur pour le titre et le bouton */}
+                <div className="header-main-content">
+                    <h4>{demande.titreComplet || 'Titre non spécifié'}</h4>
+                    <span className={`status ${getStatusClass(demande.statut)}`}>{demande.statut}</span>
+                </div>
+                {/* Le bouton est maintenant ici, à droite */}
+                <div className="card-actions">
+                    <button className="create-from-btn" onClick={handleCreateFromClick}>
+                        Créer à partir de
+                    </button>
+                </div>
             </div>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '10px', marginTop: '10px' }}>
-                <p><strong>Bureau:</strong> {demande.bureau || 'Non spécifié'}</p>
-                <p><strong>Échéance:</strong> {firstDate ? firstDate.toLocaleDateString('fr-FR') : 'Non spécifiée'}</p>
+            <div className="request-body">
+                <p><strong>Bureau:</strong> {demande.bureau || 'N/A'}</p>
+                <p><strong>Échéance:</strong> {firstDate ? firstDate.toLocaleDateString('fr-FR') : 'N/A'}</p>
                 <p><strong>Intervenants:</strong> {totalIntervenants} ({intervenantsText})</p>
-                <p><strong>Ville:</strong> {demande.ville || 'Non spécifié'}</p>
-                
-                {/* MODIFICATION ICI : On affiche le libellé ET le code */}
+                <p><strong>Ville:</strong> {demande.ville || 'N/A'}</p>
                 <p><strong>Lieu:</strong> {demande.libelleCentre || 'N/A'} ({demande.codeCentre || 'N/A'})</p>
-                
-                <p><strong>Gestionnaire:</strong> {demande.gestionnaire || 'Non spécifié'}</p>
+                <p><strong>Gestionnaire:</strong> {demande.gestionnaire || 'N/A'}</p>
             </div>
         </div>
     );
